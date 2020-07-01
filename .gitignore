@@ -1,0 +1,17 @@
+# Build folders for projects
+[Vv]ideo[Dd]ecoder/[Bb]uild/
+[Ee]xternals/[Bb]uild/
+
+# Hidden .vs folder
+.vs/
+
+# ReSharper things
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings
+*.DotSettings.user
+
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
