@@ -1,0 +1,14 @@
+prefix=../../../Build/Windows10/x64
+exec_prefix=${prefix}
+libdir=../../../Build/Windows10/x64/lib
+includedir=../../../Build/Windows10/x64/include
+
+Name: libavfilter
+Description: FFmpeg audio/video filtering library
+Version: 7.86.100
+Requires: 
+Requires.private: libswscale >= 5.8.100, libavformat >= 58.48.100, libavcodec >= 58.94.100, libswresample >= 3.8.100, libavutil >= 56.55.100
+Conflicts:
+Libs: -L${libdir}  -lavfilter 
+Libs.private: 
+Cflags: -I${includedir}

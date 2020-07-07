@@ -99,6 +99,8 @@ Application::Application(const uint32_t width, const uint32_t height, const std:
 #endif
 
 	LOG_INFO("OpenGL version {0}\n\tGLSL version {1}\n\tUsing {2} {3}", glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION), glGetString(GL_VENDOR), glGetString(GL_RENDERER));
+
+
 	
 }
 

@@ -18,6 +18,7 @@ project "VideoDecoder"
     flags { "FatalWarnings" }
 
     includedirs {
+        "%{wks.location}/Externals/ffmpeg/include",
         "%{wks.location}/Externals/glad/include",
         "%{wks.location}/Externals/glfw3/include",
         -- "%{wks.location}/Externals/glm/include",

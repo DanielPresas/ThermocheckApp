@@ -12,4 +12,4 @@ void Logger::init() {
 	_logger->set_level(spdlog::level::trace);
 }
 
-std::shared_ptr<spdlog::logger> Logger::getLogger() { return _logger; }
+Ref<spdlog::logger> Logger::getLogger() { return _logger; }

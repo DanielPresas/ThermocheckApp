@@ -12,13 +12,36 @@ project "Externals"
     warnings "default"
 
     includedirs {
+        "ffmpeg/include/ffmpeg",
         "glad/include",
         "glfw3/include",
         -- "imgui/include/imgui",
         -- "stb/include/stb"
-    }
+   }
 
-    files {
+   files {
+    --    "ffmpeg/include/ffmpeg/libavcodec/**.h",
+    --    "ffmpeg/include/ffmpeg/libavcodec/**.c",
+    --    "ffmpeg/include/ffmpeg/libavcodec/**.cpp",
+    --    "ffmpeg/include/ffmpeg/libavdevice/**.h",
+    --    "ffmpeg/include/ffmpeg/libavdevice/**.c",
+    --    "ffmpeg/include/ffmpeg/libavdevice/**.cpp",
+    --     "ffmpeg/include/ffmpeg/libavfilter/**.h",
+    --     "ffmpeg/include/ffmpeg/libavfilter/**.c",
+    --     "ffmpeg/include/ffmpeg/libavfilter/**.cpp",
+    --     "ffmpeg/include/ffmpeg/libavformat/**.h",
+    --     "ffmpeg/include/ffmpeg/libavformat/**.c",
+    --     "ffmpeg/include/ffmpeg/libavformat/**.cpp",
+    --     "ffmpeg/include/ffmpeg/libavutil/**.h",
+    --     "ffmpeg/include/ffmpeg/libavutil/**.c",
+    --     "ffmpeg/include/ffmpeg/libavutil/**.cpp",
+    --     "ffmpeg/include/ffmpeg/libswresample/**.h",
+    --     "ffmpeg/include/ffmpeg/libswresample/**.c",
+    --     "ffmpeg/include/ffmpeg/libswresample/**.cpp",
+    --     "ffmpeg/include/ffmpeg/libswscale/**.h",
+    --     "ffmpeg/include/ffmpeg/libswscale/**.c",
+    --     "ffmpeg/include/ffmpeg/libswscale/**.cpp",
+
         "glad/include/KHR/khrplatform.h",
         "glad/include/glad/glad.h",
         "glad/src/glad.c",

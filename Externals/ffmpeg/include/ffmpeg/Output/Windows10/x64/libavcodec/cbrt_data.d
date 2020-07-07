@@ -1,0 +1,9 @@
+libavcodec/cbrt_data.o: C:/ffmpeg/Output/Windows10/x64/config.h
+libavcodec/cbrt_data.o: C:/ffmpeg/libavcodec/cbrt_data.h
+libavcodec/cbrt_data.o: C:/ffmpeg/libavutil/libm.h
+libavcodec/cbrt_data.o: C:/ffmpeg/libavutil/attributes.h
+libavcodec/cbrt_data.o: C:/ffmpeg/libavutil/intfloat.h
+libavcodec/cbrt_data.o: C:/ffmpeg/libavutil/mathematics.h
+libavcodec/cbrt_data.o: C:/ffmpeg/libavutil/rational.h
+libavcodec/cbrt_data.o: C:/ffmpeg/libavcodec/cbrt_tablegen.h
+libavcodec/cbrt_data.o: C:/ffmpeg/libavcodec/aac_defines.h

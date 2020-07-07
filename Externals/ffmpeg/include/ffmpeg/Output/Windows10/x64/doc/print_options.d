@@ -1,0 +1,27 @@
+doc/print_options.o: /c/ffmpeg/doc/print_options.c \
+ /c/ffmpeg/libavutil/attributes.h /c/ffmpeg/libavutil/opt.h \
+ /c/ffmpeg/libavutil/rational.h /c/ffmpeg/libavutil/attributes.h \
+ /c/ffmpeg/libavutil/avutil.h /c/ffmpeg/libavutil/common.h \
+ /c/ffmpeg/libavutil/macros.h /c/ffmpeg/libavutil/version.h \
+ libavutil/avconfig.h /c/ffmpeg/libavutil/mem.h \
+ /c/ffmpeg/libavutil/error.h /c/ffmpeg/libavutil/mathematics.h \
+ /c/ffmpeg/libavutil/intfloat.h /c/ffmpeg/libavutil/log.h \
+ /c/ffmpeg/libavutil/pixfmt.h /c/ffmpeg/libavutil/dict.h \
+ /c/ffmpeg/libavutil/samplefmt.h /c/ffmpeg/libavcodec/options_table.h \
+ /c/ffmpeg/libavcodec/avcodec.h /c/ffmpeg/libavutil/samplefmt.h \
+ /c/ffmpeg/libavutil/avutil.h /c/ffmpeg/libavutil/buffer.h \
+ /c/ffmpeg/libavutil/cpu.h /c/ffmpeg/libavutil/channel_layout.h \
+ /c/ffmpeg/libavutil/dict.h /c/ffmpeg/libavutil/frame.h \
+ /c/ffmpeg/libavutil/buffer.h /c/ffmpeg/libavutil/hwcontext.h \
+ /c/ffmpeg/libavutil/frame.h /c/ffmpeg/libavutil/log.h \
+ /c/ffmpeg/libavutil/pixfmt.h /c/ffmpeg/libavutil/rational.h \
+ /c/ffmpeg/libavcodec/bsf.h /c/ffmpeg/libavcodec/codec_id.h \
+ /c/ffmpeg/libavcodec/codec_par.h /c/ffmpeg/libavcodec/packet.h \
+ /c/ffmpeg/libavcodec/version.h /c/ffmpeg/libavutil/version.h \
+ /c/ffmpeg/libavcodec/codec.h /c/ffmpeg/libavcodec/codec_id.h \
+ /c/ffmpeg/libavcodec/codec_desc.h /c/ffmpeg/libavcodec/version.h \
+ /c/ffmpeg/libavformat/options_table.h /c/ffmpeg/libavformat/avformat.h \
+ /c/ffmpeg/libavcodec/avcodec.h /c/ffmpeg/libavformat/avio.h \
+ /c/ffmpeg/libavutil/common.h /c/ffmpeg/libavformat/version.h \
+ /c/ffmpeg/libavformat/internal.h /c/ffmpeg/libavutil/bprint.h \
+ /c/ffmpeg/libavutil/avstring.h /c/ffmpeg/libavformat/os_support.h

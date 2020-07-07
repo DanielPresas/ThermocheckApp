@@ -1,0 +1,13 @@
+libavutil/lfg.o: C:/ffmpeg/libavutil/lfg.h
+libavutil/lfg.o: C:/ffmpeg/libavutil/crc.h
+libavutil/lfg.o: C:/ffmpeg/libavutil/attributes.h
+libavutil/lfg.o: C:/ffmpeg/libavutil/version.h
+libavutil/lfg.o: C:/ffmpeg/libavutil/macros.h
+libavutil/lfg.o: C:/ffmpeg/libavutil/md5.h
+libavutil/lfg.o: C:/ffmpeg/libavutil/error.h
+libavutil/lfg.o: C:/ffmpeg/libavutil/intreadwrite.h
+libavutil/lfg.o: C:/ffmpeg/Output/Windows10/x64/libavutil/avconfig.h
+libavutil/lfg.o: C:/ffmpeg/libavutil/bswap.h
+libavutil/lfg.o: C:/ffmpeg/Output/Windows10/x64/config.h
+libavutil/lfg.o: C:/ffmpeg/libavutil/x86/bswap.h
+libavutil/lfg.o: C:/ffmpeg/libavutil/x86/intreadwrite.h

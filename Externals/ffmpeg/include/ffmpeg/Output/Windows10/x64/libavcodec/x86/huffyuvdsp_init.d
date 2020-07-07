@@ -1,0 +1,12 @@
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/Output/Windows10/x64/config.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/libavutil/attributes.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/libavutil/cpu.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/libavutil/pixdesc.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/libavutil/pixfmt.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/Output/Windows10/x64/libavutil/avconfig.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/libavutil/version.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/libavutil/macros.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/libavutil/x86/asm.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/libavutil/x86/cpu.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/libavutil/cpu_internal.h
+libavcodec/x86/huffyuvdsp_init.o: C:/ffmpeg/libavcodec/huffyuvdsp.h
