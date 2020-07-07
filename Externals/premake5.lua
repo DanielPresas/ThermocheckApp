@@ -15,6 +15,7 @@ project "Externals"
         "glad/include",
         "glfw3/include",
         -- "imgui/include/imgui",
+        "opencv/Install/opencv/include",
         -- "stb/include/stb"
     }
 

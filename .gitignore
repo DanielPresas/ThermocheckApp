@@ -1,6 +1,8 @@
 # Build folders for projects
 [Vv]ideo[Dd]ecoder/[Bb]uild/
 [Ee]xternals/[Bb]uild/
+[Ee]xternals/[Oo]pen[Cc][Vv]/
+![Ee]xternals/[Oo]pen[Cc][Vv]/installOCV.sh
 
 # Hidden .vs folder
 .vs/
