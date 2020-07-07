@@ -19,5 +19,7 @@ workspace "VideoDecoder"
         "Distribution"
     }
 
+    startproject "VideoDecoder"
+
 include "Externals"
 include "VideoDecoder"
