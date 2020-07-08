@@ -29,7 +29,7 @@ private:
 
 #define LOG_ASSERT(checkIfTrue, ...) \
 if(!(checkIfTrue)) {\
-	::Logger::getLogger()->error("ASSERTION FAILED: {0}", #checkIfTrue);\
+	::Logger::getLogger()->critical("ASSERTION FAILED: {0}", #checkIfTrue);\
 	::Logger::getLogger()->error(##__VA_ARGS__);\
 	__debugbreak();\
 }

@@ -22,22 +22,20 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
-#include <iostream>
 
 
 int main(int argc, char** argv) {
-	if(argc != 2) {
-		std::cout << " Usage: " << argv[0] << " ImageToLoadAndDisplay" << std::endl;
-		return -1;
+	Logger::init();
+	
+	cv::samples::addSamplesDataSearchPath("C:/Repos/Brilliant Catalyst/Camera Video Decoder/Externals/opencv/opencv/samples/data");
+	std::string image_path = cv::samples::findFile("starry_night.jpg", true, true);
+	cv::Mat img = imread(image_path, cv::IMREAD_GRAYSCALE);
+	LOG_ASSERT(img.empty(), "Could not read the image: {}", image_path);
+	cv::imshow("Thermocheck App", img);
+	int k = cv::waitKey(0); // Wait for a keystroke in the window
+	if(k == 's') {
+		cv::imwrite("starry_night.png", img);
 	}
-	cv::Mat image = cv::imread(argv[1], cv::IMREAD_COLOR); // Read the file
-	if(image.empty()) // Check for invalid input
-	{
-		std::cout << "Could not open or find the image" << std::endl;
-		return -1;
-	}
-	cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE); // Create a window for display.
-	imshow("Display window", image); // Show our image inside it.
-	cv::waitKey(0); // Wait for a keystroke in the window
+	
 	return 0;
 }
