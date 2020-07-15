@@ -6,7 +6,12 @@
 #include <opencv2/highgui.hpp>
 
 
-#define CH2_5 1
+#define CH2_9 1
+#define VIDEO_FEED 1
+
+static void mouseCallback(int e, int x, int y, int flags, void* userData) {
+	
+}
 
 int main(int argc, char** argv) {
 	Logger::init();
@@ -29,9 +34,10 @@ int main(int argc, char** argv) {
 	color = Scalar(255, 0, 0, 0);
 	imshow("Blue", color);
 	LOG_TRACE("{}", color.at<Vec3b>(Point(0, 0)));
-	
+
 	cv::waitKey(0);
 	cv::destroyAllWindows();
+	
 #endif
 
 #if CH2_4
@@ -68,14 +74,136 @@ int main(int argc, char** argv) {
 	cv::split(hsv, hsvChannels);
 	cv::hconcat(hsvChannels, 3, hsvSplit);
 
-	cv::imshow("Split HSV", hsvSplit);	
-	
-	waitKey(0);
-	destroyAllWindows();
+	cv::imshow("Split HSV", hsvSplit);
+
+	cv::waitKey(0);
+	cv::destroyAllWindows();
 	
 #endif
 
+#if CH2_5
+	Mat color = cv::imread("starry_night.png", cv::IMREAD_COLOR);
+	Mat gray;
+	cv::cvtColor(color, gray, cv::COLOR_RGB2GRAY);
+	cv::imwrite("gray.jpg", gray);
+
+	Mat channels[3];
+	cv::split(color, channels);
 	
+	Mat rgba, rgbaChannels[4] = { channels[0], channels[1], channels[2], channels[1] };
+	cv::merge(rgbaChannels, 4, rgba);
+	cv::imwrite("rgba.png", rgba);
+	
+#endif
+
+#if CH2_6
+
+	Mat image = cv::imread("starry_night.png");
+	LOG_ASSERT(!image.empty(), "Could not load image!");
+	cv::imshow("Original", image);
+
+	Mat blur;
+	cv::GaussianBlur(image, blur, { 5, 55 }, 0);
+	cv::imshow("Blur", blur);
+
+	Mat kernel = Mat::ones({ 5, 5 }, CV_8U);
+	Mat dilate, erode;
+	cv::dilate(image, dilate, kernel, { -1, -1 }, 1);
+	cv::erode(image, erode, kernel, { -1, -1 }, 1);
+
+	cv::imshow("Dilate", dilate);
+	cv::imshow("Erode", erode);
+
+	cv::waitKey(0);
+	cv::destroyAllWindows();
+	
+#endif
+
+#if CH2_7
+
+	Mat image = cv::imread("starry_night.png", IMREAD_COLOR);
+	LOG_ASSERT(!image.empty(), "Could not load image!");
+
+	// Scaling
+	Mat halfImage, stretchImage, stretchNear;
+	cv::resize(image, halfImage, { 0, 0 }, 0.5, 0.5);
+	cv::resize(image, stretchImage, { 600, 600 });
+	cv::resize(image, stretchNear, { 600, 600 }, 0, 0, INTER_NEAREST);
+
+	cv::imshow("Half", halfImage);
+	cv::imshow("Stretch", stretchImage);
+	cv::imshow("Stretch Nearest", stretchNear);
+
+	// Rotation
+	Mat rotationMat = cv::getRotationMatrix2D({ 0, 0 }, -30, 1);
+	Mat rotated;
+	cv::warpAffine(image, rotated, rotationMat, rotated.size());
+
+	cv::imshow("Rotated", rotated);
+	
+	cv::waitKey(0);
+	cv::destroyAllWindows();
+	
+#endif
+
+#if CH2_8 && VIDEO_FEED
+
+	auto cap = VideoCapture(0);
+	while(true) {
+
+		Mat frame;
+		cap.read(frame);
+
+		cv::resize(frame, frame, { 0, 0 }, 0.5f, 0.5f);
+		cv::imshow("Frame", frame);
+		
+		auto ch = cv::waitKey(1);
+		if(ch > 0) {
+			break;
+		}
+	}
+
+	cap.release();
+	cv::destroyAllWindows();
+	
+#endif
+
+#if CH2_9 && VIDEO_FEED
+
+	auto cap = VideoCapture(1);
+	Scalar color = { 0, 255, 0 };
+	int lineWidth = 3;
+	int radius = 100;
+	Vec2i point = { 0, 0 };
+	
+	
+	cv::namedWindow("Frame");
+	cv::setMouseCallback("Frame", [](int e, int x, int y, int flags, void* userData) {
+		if(e == cv::EVENT_LBUTTONDOWN) {
+			LOG_INFO("Left button pressed: ({0}, {1})", x, y);
+			*static_cast<Vec2i*>(userData) = { x, y };
+		}
+	}, &point);
+	
+	while(true) {
+
+		Mat frame;
+		cap.read(frame);
+
+		cv::resize(frame, frame, { 0, 0 }, 0.5f, 0.5f);
+		cv::circle(frame, point, radius, color, lineWidth);
+		cv::imshow("Frame", frame);
+
+		auto ch = cv::waitKey(1);
+		if(ch > 0) {
+			break;
+		}
+	}
+
+	cap.release();
+	cv::destroyAllWindows();
+
+#endif
 	
 	return 0;
 }
