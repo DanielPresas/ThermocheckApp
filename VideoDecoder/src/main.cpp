@@ -9,10 +9,6 @@
 #define CH2_9 1
 #define VIDEO_FEED 1
 
-static void mouseCallback(int e, int x, int y, int flags, void* userData) {
-	
-}
-
 int main(int argc, char** argv) {
 	Logger::init();
 	using namespace cv;
