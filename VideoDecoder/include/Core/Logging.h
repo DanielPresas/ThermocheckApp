@@ -9,6 +9,7 @@ class Logger {
 public:
 
 	static void init();
+	static void shutdown();
 	static Ref<spdlog::logger> getLogger();
 
 private:

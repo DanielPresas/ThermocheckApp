@@ -5,9 +5,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
-
-#define CH2_9 1
-#define VIDEO_FEED 1
+#define CH3_3 1
 
 int main(int argc, char** argv) {
 	Logger::init();
@@ -38,7 +36,7 @@ int main(int argc, char** argv) {
 
 #if CH2_4
 
-	Mat color = imread("starry_night.png", IMREAD_COLOR);
+	Mat color = imread("assets/starry_night.png", IMREAD_COLOR);
 	cv::imshow("Image", color);
 	cv::moveWindow("Image", 0, 0);
 
@@ -78,23 +76,23 @@ int main(int argc, char** argv) {
 #endif
 
 #if CH2_5
-	Mat color = cv::imread("starry_night.png", cv::IMREAD_COLOR);
+	Mat color = cv::imread("assets/starry_night.png", cv::IMREAD_COLOR);
 	Mat gray;
 	cv::cvtColor(color, gray, cv::COLOR_RGB2GRAY);
-	cv::imwrite("gray.jpg", gray);
+	cv::imwrite("outputs/gray.jpg", gray);
 
 	Mat channels[3];
 	cv::split(color, channels);
 	
 	Mat rgba, rgbaChannels[4] = { channels[0], channels[1], channels[2], channels[1] };
 	cv::merge(rgbaChannels, 4, rgba);
-	cv::imwrite("rgba.png", rgba);
+	cv::imwrite("outputs/rgba.png", rgba);
 	
 #endif
 
 #if CH2_6
 
-	Mat image = cv::imread("starry_night.png");
+	Mat image = cv::imread("assets/starry_night.png");
 	LOG_ASSERT(!image.empty(), "Could not load image!");
 	cv::imshow("Original", image);
 
@@ -117,7 +115,7 @@ int main(int argc, char** argv) {
 
 #if CH2_7
 
-	Mat image = cv::imread("starry_night.png", IMREAD_COLOR);
+	Mat image = cv::imread("assets/starry_night.png", IMREAD_COLOR);
 	LOG_ASSERT(!image.empty(), "Could not load image!");
 
 	// Scaling
@@ -167,18 +165,26 @@ int main(int argc, char** argv) {
 #if CH2_9 && VIDEO_FEED
 
 	auto cap = VideoCapture(1);
-	Scalar color = { 0, 255, 0 };
-	int lineWidth = 3;
-	int radius = 100;
+	const Scalar color = { 0, 255, 0 };
+	const int lineWidth = 3;
+	const int radius = 100;
 	Vec2i point = { 0, 0 };
 	
 	
 	cv::namedWindow("Frame");
-	cv::setMouseCallback("Frame", [](int e, int x, int y, int flags, void* userData) {
+	cv::setMouseCallback("Frame", [](const int e, const int x, const int y, const int flags, void* userData) {
 		if(e == cv::EVENT_LBUTTONDOWN) {
 			LOG_INFO("Left button pressed: ({0}, {1})", x, y);
 			*static_cast<Vec2i*>(userData) = { x, y };
 		}
+
+		if(e == cv::EVENT_MOUSEMOVE) {
+			if(flags == cv::EVENT_FLAG_LBUTTON) {
+				LOG_INFO("Mouse moved while pressed: ({0}, {1})", x, y);
+				*static_cast<Vec2i*>(userData) = { x, y };
+			}
+		}
+		
 	}, &point);
 	
 	while(true) {
@@ -190,7 +196,7 @@ int main(int argc, char** argv) {
 		cv::circle(frame, point, radius, color, lineWidth);
 		cv::imshow("Frame", frame);
 
-		auto ch = cv::waitKey(1);
+		const auto ch = cv::waitKey(1);
 		if(ch > 0) {
 			break;
 		}
@@ -200,6 +206,117 @@ int main(int argc, char** argv) {
 	cv::destroyAllWindows();
 
 #endif
+
+#if CH2_DRAWING_APP
+
+	struct CallbackData {
+		Mat canvas = Mat::ones({ 500, 500 }, CV_8UC3);
+		int radius = 3;
+		Scalar color = { 0.0, 255.0, 0.0, 255.0 };
+	} callbackData;
+
+
+	callbackData.canvas = Scalar(255, 255, 255, 255);
+	
+	cv::namedWindow("Canvas");
+	cv::setMouseCallback("Canvas", [](const int e, const int x, const int y, const int flags, void* userData) {
+		CallbackData* params = static_cast<CallbackData*>(userData);
+		
+		switch(e) {
+			case cv::EVENT_LBUTTONDOWN: {
+				LOG_INFO("Left button pressed: ({0}, {1})", x, y);
+				cv::circle(params->canvas, { x, y }, params->radius, params->color, FILLED);
+				break;
+			}
+			case cv::EVENT_MOUSEMOVE: {
+				if(flags == EVENT_FLAG_LBUTTON) {
+					LOG_INFO("Mouse moved while pressed: ({0}, {1})", x, y);
+					cv::circle(params->canvas, { x, y }, params->radius, params->color, FILLED);
+				}
+				break;
+			}
+			case cv::EVENT_LBUTTONUP: {
+				LOG_INFO("Left button released: ({0}, {1})", x, y);
+				break;
+			}
+			default: break;
+		}
+	}, &callbackData);
+
+	// Draw loop
+	while(true) {
+		cv::imshow("Canvas", callbackData.canvas);
+
+		const int ch = cv::waitKey(1);
+		if(ch == 27 || !static_cast<bool>(cv::getWindowProperty("Canvas", cv::WindowPropertyFlags::WND_PROP_VISIBLE))) {
+			break;
+		}
+
+		switch(static_cast<char>(ch)) {
+			case 'b': {
+				callbackData.color = { 255.0, 0.0, 0.0 };
+				break;
+			}
+			case 'g': {
+				callbackData.color = { 0.0, 255.0, 0.0 };
+				break;
+			}
+			case 'r': {
+				callbackData.color = { 0.0, 0.0, 255.0 };
+				break;
+			}
+			
+			default: break;
+			
+		}
+		
+	}
+
+	cv::destroyAllWindows();
+	
+#endif
+
+#if CH3_2
+	Mat bw = cv::imread("assets/detect_blob.png", IMREAD_GRAYSCALE);
+	cv::imshow("Original B&W", bw);
+
+	Mat binary = Mat::zeros(bw.rows, bw.cols, CV_8U);
+	const int threshold = 85;
+
+	{
+		Timer timer("Slow binary", true);
+		
+		for(int row = 0; row < bw.rows; ++row) {
+			for(int col = 0; col < bw.cols; ++col) {
+				if(bw.at<uchar>(row, col) > threshold) {
+					binary.at<uchar>(row, col) = static_cast<uint8_t>(255);
+				}
+			}
+		}
+		cv::imshow("Slow Binary", binary);
+	}
+
+	{
+		Timer timer("CV threshold func", true);
+		
+		cv::threshold(bw, binary, threshold, 255, cv::THRESH_BINARY);
+		cv::imshow("CV Threshold Func", binary);
+	}
+	
+	const int ch = cv::waitKey(0);
+	if(ch == 27) {
+		cv::destroyAllWindows();
+	}
+	
+#endif
+
+#if CH3_3
+
+
+	
+#endif
+	
+	Logger::shutdown();
 	
 	return 0;
 }
