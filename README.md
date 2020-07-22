@@ -1,6 +1,6 @@
-# Video Decoder
+# Thermocheck App
 
-A simple project that uses OpenCV to get thermal image data.
+A simple project that uses OpenCV to get thermal image data and performs facial recognition.
 
 ## Building for Windows
 
