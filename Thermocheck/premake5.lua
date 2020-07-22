@@ -1,6 +1,6 @@
-print("Building project \"VideoDecoder\"...")
-print("")
-project "VideoDecoder"
+print("Building project \"Thermocheck\"...\n")
+
+project "Thermocheck"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -10,8 +10,8 @@ project "VideoDecoder"
     targetdir "Build/bin/%{cfg.architecture}/%{cfg.buildcfg}"
     objdir "Build/obj/%{cfg.architecture}/%{cfg.buildcfg}"
 
-    pchheader "vdpch.h"
-	pchsource "src/vdpch.cpp"
+    pchheader "tcpch.h"
+	pchsource "src/tcpch.cpp"
 
     defines {
         "GLFW_INCLUDE_NONE",
@@ -23,13 +23,12 @@ project "VideoDecoder"
     includedirs {
         "%{wks.location}/Externals/glad/include",
         "%{wks.location}/Externals/glfw3/include",
-        -- "%{wks.location}/Externals/glm/include",
         -- "%{wks.location}/Externals/imgui/include",
         "%{wks.location}/Externals/opencv/Install/opencv/include",
         "%{wks.location}/Externals/spdlog/include",
-        -- "%{wks.location}/Externals/stb/include",
         
-        "include"
+        "include",
+        "include/Examples/include"
     }
 
     libdirs {
@@ -45,7 +44,8 @@ project "VideoDecoder"
         "include/**.h",
         "include/**.hpp",
         "include/**.inl",
-        "src/**.cpp"
+        "src/**.cpp",
+        "src/**.inl"
     }
 
     filter "system:windows"
@@ -62,10 +62,10 @@ project "VideoDecoder"
 
     filter "configurations:Debug"
         defines {
-            "_DEBUG=1",
-            "_RELEASE=0",
-            "_DIST=0",
-            "_ENABLE_ASSERTS=1"
+            "TC_DEBUG=1",
+            "TC_RELEASE=0",
+            "TC_DIST=0",
+            "TC_ENABLE_ASSERTS=1"
         }
 
         runtime "Debug"
@@ -105,10 +105,10 @@ project "VideoDecoder"
 
     filter "configurations:Release"
         defines {
-            "_DEBUG=0",
-            "_RELEASE=1",
-            "_DIST=0",
-            "_ENABLE_ASSERTS=0"
+            "TC_DEBUG=0",
+            "TC_RELEASE=1",
+            "TC_DIST=0",
+            "TC_ENABLE_ASSERTS=0"
         }
         runtime "Release"
         optimize "on"
@@ -147,10 +147,10 @@ project "VideoDecoder"
 
     filter "configurations:Distribution"
         defines {
-            "_DEBUG=0",
-            "_RELEASE=0",
-            "_DIST=1",
-            "_ENABLE_ASSERTS=0"
+            "TC_DEBUG=0",
+            "TC_RELEASE=0",
+            "TC_DIST=1",
+            "TC_ENABLE_ASSERTS=0"
         }
 
         runtime "Release"

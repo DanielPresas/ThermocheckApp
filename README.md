@@ -21,4 +21,5 @@ A simple project that uses OpenCV to get thermal image data.
 3. Open the generated `.sln` file, choose your build configuration (Debug, Release or Distribution) and build using `Ctrl` + `Shift`+ `B`, or by navigating to `Build > Build Solution`.
 
 To test in the VS2019 environment, simply click "Local Windows Debugger at the top, or press `F5` (`Ctrl` + `F5` if you want to start without the debugger).
-Current build should show: Starry night by Van Gogh in a window named "Thermocheck App"
+
+Current build: Video capture device with simple thresholding algorithm for skin detection

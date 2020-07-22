@@ -1,4 +1,4 @@
-#include "vdpch.h"
+#include "tcpch.h"
 #include "Core/Logging.h"
 
 #include <memory>
@@ -8,7 +8,7 @@ Ref<spdlog::logger> Logger::_logger = nullptr;
 
 void Logger::init()
 {
-#if _DEBUG || _RELEASE
+#if TC_DEBUG || TC_RELEASE
 
 	spdlog::set_pattern("%^[%H:%M:%S.%e - %l]: %v%$");
 	_logger = spdlog::stdout_color_mt("LOGGER");
@@ -18,7 +18,7 @@ void Logger::init()
 }
 
 void Logger::shutdown() {
-#if _DEBUG || _RELEASE
+#if TC_DEBUG || TC_RELEASE
 	
 	spdlog::shutdown();
 	

@@ -15,8 +15,7 @@ project "Externals"
         "glad/include",
         "glfw3/include",
         -- "imgui/include/imgui",
-        "opencv/Install/opencv/include",
-        -- "stb/include/stb"
+        "opencv/Install/opencv/include"
     }
 
     files {
@@ -56,12 +55,7 @@ project "Externals"
         }
 
     filter "configurations:Debug"
-        defines {
-            "_DEBUG",
-            "FT_DEBUG_LEVEL_ERROR",
-            "FT_DEBUG_LEVEL_TRACE"
-        }
-
+        defines { "_DEBUG" }
         runtime "Debug"
         symbols "on"
 

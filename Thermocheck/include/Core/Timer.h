@@ -2,7 +2,6 @@
 #define TIMER_H
 
 #include <chrono>
-#include <cstdint>
 #include <string>
 
 class Timer {

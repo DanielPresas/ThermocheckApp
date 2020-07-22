@@ -19,7 +19,7 @@ private:
 
 #endif
 
-#if _DEBUG || _RELEASE
+#if TC_DEBUG || TC_RELEASE
 
 #define LOG_CRITICAL(message, ...)	::Logger::getLogger()->critical(message, ##__VA_ARGS__)
 #define LOG_ERROR(message, ...)		::Logger::getLogger()->error(message, ##__VA_ARGS__)

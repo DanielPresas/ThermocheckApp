@@ -1,8 +1,7 @@
 print("Starting premake build...")
-print("")
 
-print("Building solution VideoDecoder...")
-workspace "VideoDecoder"
+print("Building solution Thermocheck...\n")
+workspace "ThermocheckApp"
     defines "_CRT_SECURE_NO_WARNINGS"
     architecture "x64"
 
@@ -19,7 +18,7 @@ workspace "VideoDecoder"
         "Distribution"
     }
 
-    startproject "VideoDecoder"
+    startproject "Thermocheck"
 
 include "Externals"
-include "VideoDecoder"
+include "Thermocheck"
