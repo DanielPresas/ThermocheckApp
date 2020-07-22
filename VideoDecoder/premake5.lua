@@ -13,7 +13,10 @@ project "VideoDecoder"
     pchheader "vdpch.h"
 	pchsource "src/vdpch.cpp"
 
-    defines { "GLFW_INCLUDE_NONE" }
+    defines {
+        "GLFW_INCLUDE_NONE",
+        "NOMINMAX"
+    }
 
     flags { "FatalWarnings" }
 

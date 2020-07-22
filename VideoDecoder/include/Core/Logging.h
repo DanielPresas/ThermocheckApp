@@ -31,6 +31,8 @@ private:
 #define LOG_ASSERT(checkIfTrue, ...) \
 if(!(checkIfTrue)) {\
 	::Logger::getLogger()->critical("ASSERTION FAILED: {0}", #checkIfTrue);\
+	::Logger::getLogger()->critical("File: {}", __FILE__);\
+	::Logger::getLogger()->critical("Line: {}", __LINE__);\
 	::Logger::getLogger()->error(##__VA_ARGS__);\
 	__debugbreak();\
 }

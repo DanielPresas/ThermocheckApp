@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TIMER_H
+#define TIMER_H
 
 #include <chrono>
 #include <cstdint>
@@ -24,3 +25,5 @@ private:
 
 	static uint32_t _id;
 };
+
+#endif
