@@ -16,15 +16,16 @@ int main(int argc, char** argv) {
 
 	Logger::init();
 	using namespace cv;
-
-	auto cam = VideoCapture(1);
+	
+	int captureDevice = 0;
+	auto cam = VideoCapture(captureDevice);
 	cv::namedWindow("Capture");
 
 	Timer timer("Face cascade real time");
 	
 	while(true) {
 		UMat frame;
-		LOG_ASSERT(cam.read(frame), "Failed to read frame from capture device!");
+		Logger::logAssert(cam.read(frame), "Failed to read frame from capture device {}!", captureDevice);
 		cv::imshow("Capture", frame);
 		
 		UMat frameCopy = frame.clone();
@@ -53,7 +54,7 @@ int main(int argc, char** argv) {
 
 		UMat gray; cv::cvtColor(frame, gray, COLOR_BGR2GRAY);
 		auto faceCascade = CascadeClassifier("assets/haarcascade_frontalface_default.xml");
-		LOG_ASSERT(!faceCascade.empty(), "Failed to load cascade classifier!");
+		Logger::logAssert(!faceCascade.empty(), "Failed to load cascade classifier!");
 
 		std::vector<Rect> faces;
 		{
@@ -61,7 +62,7 @@ int main(int argc, char** argv) {
 			faceCascade.detectMultiScale(gray, faces, 1.1, 5, 0, { 40, 40 });
 			timer.stop();
 		}
-		LOG_TRACE("Number of faces detected: {}", faces.size());
+		Logger::trace("Number of faces detected: {}", faces.size());
 
 		for(const auto& rect : faces) {
 			cv::rectangle(frameCopy, { rect.x, rect.y }, { rect.x + rect.width, rect.y + rect.height }, { 255 }, 4);

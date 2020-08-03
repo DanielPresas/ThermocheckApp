@@ -1,9 +1,6 @@
-print("Building project \"Thermocheck\"...\n")
-
 project "Thermocheck"
     kind "ConsoleApp"
     language "C++"
-    cppdialect "C++17"
 
     staticruntime "on"
 
@@ -11,35 +8,21 @@ project "Thermocheck"
     objdir "Build/obj/%{cfg.architecture}/%{cfg.buildcfg}"
 
     pchheader "tcpch.h"
-	pchsource "src/tcpch.cpp"
+    pchsource "src/tcpch.cpp"
 
-    defines {
-        "GLFW_INCLUDE_NONE",
-        "NOMINMAX"
-    }
+    defines { "NOMINMAX" }
 
     flags { "FatalWarnings" }
 
     includedirs {
-        "%{wks.location}/Externals/glad/include",
-        "%{wks.location}/Externals/glfw3/include",
         -- "%{wks.location}/Externals/imgui/include",
-        "%{wks.location}/Externals/opencv/Install/opencv/include",
+        "%{wks.location}/Externals/opencv/opencv/include",
         "%{wks.location}/Externals/spdlog/include",
         
         "include",
         "include/Examples/include"
     }
-
-    libdirs {
-        "%{wks.location}/Externals/opencv/Install/opencv/x64/vc16/**"
-    }
-
-    links {
-        "Externals",
-        "opengl32"
-    }
-
+    
     files {
         "include/**.h",
         "include/**.hpp",
@@ -47,17 +30,75 @@ project "Thermocheck"
         "src/**.cpp",
         "src/**.inl"
     }
+    
+    postbuildcommands {
+		"{COPY} %{wks.location}/Thermocheck/assets %{cfg.targetdir}/assets"
+    }
 
     filter "system:windows"
+		cppdialect "C++17"    
         systemversion "latest"
+        
         defines {
             "PLATFORM_WINDOWS"
         }
+        
+        libdirs {
+            "%{wks.location}/Externals/opencv/Install/opencv/x64/vc16/**"
+        }
 
     filter "system:linux"
+        cppdialect "C++1y"
         systemversion "latest"
+        
         defines {
             "PLATFORM_LINUX"
+        }
+        
+        includedirs {
+			"/usr/local/include/opencv4"
+        }
+        
+        removefiles {
+			"src/tcpch.cpp"
+        }
+        
+        libdirs {
+			"/usr/lib",
+			"/usr/lib/arm-gnueabihf",
+			"/usr/local/lib",
+			"/usr/local/lib/opencv4/**",
+			"%{wks.location}/Externals/opencv/opencv/build/**"
+        }
+        
+        links {
+            "IlmImf",
+            "ittnotify",
+            "libprotobuf",
+            "libwebp",
+            "jasper",
+            "png",
+            "turbojpeg",
+            "tiff",
+            "quirc",
+            "z",
+
+            "opencv_calib3d",
+            "opencv_core",
+            "opencv_features2d",
+            "opencv_flann",
+            "opencv_highgui",
+            "opencv_imgcodecs",
+            "opencv_imgproc",
+            "opencv_ml",
+            "opencv_objdetect",
+            "opencv_photo",
+            "opencv_shape",
+            "opencv_stitching",
+            "opencv_superres",
+            "opencv_video",
+            "opencv_videoio",
+            "opencv_videostab"
         }
 
     filter "configurations:Debug"
@@ -70,7 +111,8 @@ project "Thermocheck"
 
         runtime "Debug"
         symbols "on"
-
+        
+    filter { "configurations:Debug", "system:windows" }
         links {
             "IlmImfd",
             "ippicvmt",
@@ -102,6 +144,7 @@ project "Thermocheck"
             "opencv_videoio440d",
             "opencv_videostab440d"
         }
+     
 
     filter "configurations:Release"
         defines {
@@ -113,6 +156,7 @@ project "Thermocheck"
         runtime "Release"
         optimize "on"
         
+    filter { "configurations:Release", "system:windows" }
         links {
             "IlmImf",
             "ippicvmt",
@@ -156,6 +200,7 @@ project "Thermocheck"
         runtime "Release"
         optimize "on"
 
+    filter { "configurations:Distribution", "system:windows" }
         links {
             "IlmImf",
             "ippicvmt",

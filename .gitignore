@@ -1,11 +1,10 @@
 # Build folders for projects
 [Tt]hermo[Cc]heck/[Bb]uild/
 [Ee]xternals/[Bb]uild/
-[Ee]xternals/[Oo]pen[Cc][Vv]/Build/
-[Ee]xternals/[Oo]pen[Cc][Vv]/Install/
-[Ee]xternals/[Oo]pen[Cc][Vv]/opencv/
-[Ee]xternals/[Oo]pen[Cc][Vv]/opencv_contrib/
+[Ee]xternals/[Oo]pen[Cc][Vv]/[Oo]pen[Cc][Vv]/
+[Ee]xternals/[Oo]pen[Cc][Vv]/[Oo]pen[Cc][Vv]_[Cc]ontrib/
 
+# WINDOWS IGNORES
 # Hidden .vs folder
 .vs/
 
@@ -19,3 +18,6 @@ _ReSharper*/
 *.vcxproj.filters
 *.vcxproj.user
 *.sln
+
+# LINUX IGNORES
+Makefile

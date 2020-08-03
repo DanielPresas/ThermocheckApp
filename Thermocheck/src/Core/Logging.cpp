@@ -24,5 +24,3 @@ void Logger::shutdown() {
 	
 #endif
 }
-
-Ref<spdlog::logger> Logger::getLogger() { return _logger; }

@@ -1,49 +1,77 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include "Core/Memory.h"
+#if PLATFORM_LINUX
+#include <signal.h>
+#endif
+
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
+#include "Core/Memory.h"
 
 class Logger {
 public:
 
 	static void init();
 	static void shutdown();
-	static Ref<spdlog::logger> getLogger();
+	
+	template<typename FormatString, typename ...Args>
+	static void critical(const FormatString& message, const Args&... args) {
+#if TC_DEBUG || TC_RELEASE
+		_logger->critical(message, args...);
+#endif
+	}
+	
+	template<typename FormatString, typename ...Args>
+	static void error(const FormatString& message, const Args&... args) {
+#if TC_DEBUG || TC_RELEASE
+		_logger->error(message, args...);
+#endif
+	}
+	
+	template<typename FormatString, typename ...Args>
+	static void warning(const FormatString& message, const Args&... args) {
+#if TC_DEBUG || TC_RELEASE
+		_logger->warn(message, args...);
+#endif
+	}
+	
+	template<typename FormatString, typename ...Args>
+	static void info(const FormatString& message, const Args&... args) {
+#if TC_DEBUG || TC_RELEASE
+		_logger->info(message, args...);
+#endif
+	}
+	
+	template<typename FormatString, typename ...Args>
+	static void trace(const FormatString& message, const Args&... args) {
+#if TC_DEBUG || TC_RELEASE
+		_logger->trace(message, args...);
+#endif
+	}
+	
+	template<typename FormatString, typename ...Args>
+	static void logAssert(bool checkIfTrue, const FormatString& message, const Args&... args) {
+#if TC_ENABLE_ASSERTS
+		if(!checkIfTrue) {
+			_logger->critical("ASSERTION FAILED!");
+			_logger->critical("FILE: ", __FILE__);
+			_logger->critical("LINE: ", __LINE__);
+			_logger->error(message, args...);
+#if PLATFORM_WINDOWS
+			__debugbreak();
+#elif PLATFORM_LINUX
+			raise(SIGTRAP);
+#endif
+		}
+#endif
+	}
 
 private:
 
 	static Ref<spdlog::logger> _logger;
 };
-
-#endif
-
-#if TC_DEBUG || TC_RELEASE
-
-#define LOG_CRITICAL(message, ...)	::Logger::getLogger()->critical(message, ##__VA_ARGS__)
-#define LOG_ERROR(message, ...)		::Logger::getLogger()->error(message, ##__VA_ARGS__)
-#define LOG_WARNING(message, ...)	::Logger::getLogger()->warn(message, ##__VA_ARGS__)
-#define LOG_INFO(message, ...)		::Logger::getLogger()->info(message, ##__VA_ARGS__)
-#define LOG_TRACE(message, ...)		::Logger::getLogger()->trace(message, ##__VA_ARGS__)
-
-
-#define LOG_ASSERT(checkIfTrue, ...) \
-if(!(checkIfTrue)) {\
-	::Logger::getLogger()->critical("ASSERTION FAILED: {0}", #checkIfTrue);\
-	::Logger::getLogger()->critical("File: {}", __FILE__);\
-	::Logger::getLogger()->critical("Line: {}", __LINE__);\
-	::Logger::getLogger()->error(##__VA_ARGS__);\
-	__debugbreak();\
-}
-
-#else
-
-#define LOG_CRITICAL(message, ...)
-#define LOG_ERROR(message, ...)
-#define LOG_WARNING(message, ...)
-#define LOG_INFO(message, ...)
-#define LOG_TRACE(message, ...)
-#define LOG_ASSERT(checkIfTrue, ...)
 
 #endif
