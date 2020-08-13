@@ -16,7 +16,7 @@ project "Thermocheck"
 
     includedirs {
         -- "%{wks.location}/Externals/imgui/include",
-        "%{wks.location}/Externals/opencv/opencv/include",
+        "%{wks.location}/Externals/opencv/install/opencv/include",
         "%{wks.location}/Externals/spdlog/include",
         
         "include",
@@ -44,7 +44,7 @@ project "Thermocheck"
         }
         
         libdirs {
-            "%{wks.location}/Externals/opencv/Install/opencv/x64/vc16/**"
+            "%{wks.location}/Externals/opencv/install/opencv/x64/vc16/**"
         }
 
     filter "system:linux"

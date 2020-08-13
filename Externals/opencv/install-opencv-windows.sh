@@ -1,36 +1,18 @@
 #!/usr/bin/env bash
 CURRENT_LOCATION=$(pwd)
-CMAKE_CONFIG_GENERATOR="Unix Makefiles"
-OPENCV_INSTALL_LOCATION="/usr/local"
+CMAKE_CONFIG_GENERATOR="Visual Studio 16 2019"
+OPENCV_INSTALL_LOCATION="$CURRENT_LOCATION/install/opencv"
 CMAKE_OPTIONS="\
 -D BUILD_DOCS=OFF \
 -D BUILD_EXAMPLES=OFF \
 -D BUILD_PERF_TESTS=OFF \
+-D BUILD_SHARED_LIBS=OFF \
 -D BUILD_TESTS=OFF \
--D ENABLE_NEON=ON \
--D ENABLE_VFPV3=ON \
 -D INSTALL_CREATE_DISTRIB=ON \
--D INSTALL_C_EXAMPLES=OFF \
--D INSTALL_PYTHON_EXAMPLES=OFF \
--D OPENCV_ENABLE_NONFREE=ON"
-
-INSTALL_DEP_ARG="--install-dependencies"
-
-if [[ $1 = $INSTALL_DEP_ARG ]]; then
-	echo -e "\nInstalling/updating dependencies..."
-	sudo apt-get -y install \
-	git cmake build-essential pkg-config \
-	libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev \
-	libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \
-	libxvidcore-dev libx264-dev \
-	libgtk-3-dev libcanberra-gtk* \
-	libatlas-base-dev gfortran \
-	python3-dev python3-numpy python-dev python-numpy
-
-	echo -e "\nUpdating and upgrading..."
-	sudo apt-get -y update
-	sudo apt-get -y upgrade
-fi
+-D INSTALL_C_EXAMPLES=ON \
+-D INSTALL_PYTHON_EXAMPLES=ON \
+-D OPENCV_ENABLE_NONFREE=ON \
+-D WITH_CUDA=OFF"
 
 if [ ! -d "$CURRENT_LOCATION/opencv" ]; then
 	echo -e "\nCloning latest opencv commit..."
@@ -64,8 +46,20 @@ fi
 
 echo -e "\n*****\nBuilding opencv...\n*****"
 pushd "$CURRENT_LOCATION/opencv/build"
-	cmake -G "$CMAKE_CONFIG_GENERATOR" $CMAKE_OPTIONS -D OPENCV_EXTRA_MODULES_PATH="$CURRENT_LOCATION/opencv_contrib/modules" -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX="$OPENCV_INSTALL_LOCATION" "$CURRENT_LOCATION/opencv"
-	make -j3 -k
-	sudo make install
-	sudo ldconfig
+	cmake -G "$CMAKE_CONFIG_GENERATOR" $CMAKE_OPTIONS -D OPENCV_EXTRA_MODULES_PATH="$CURRENT_LOCATION/opencv_contrib/modules" -D CMAKE_INSTALL_PREFIX="$OPENCV_INSTALL_LOCATION" "$CURRENT_LOCATION/opencv"
+
+	echo -e "\nStarting debug build..."
+	cmake --build .  --config debug
+	
+	echo -e "\nStarting release build..."
+	cmake --build .  --config release
+	
+	if [ ! -d "$OPENCV_INSTALL_LOCATION" ]; then
+		echo -e "\nMaking installation directory \"$OPENCV_INSTALL_LOCATION\"..."
+		mkdir -p $OPENCV_INSTALL_LOCATION
+	fi
+
+	echo -e "\nInstalling libraries in $OPENCV_INSTALL_LOCATION..."
+	cmake --build .  --target install --config debug
+	cmake --build .  --target install --config release
 popd

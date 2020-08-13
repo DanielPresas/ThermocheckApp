@@ -17,18 +17,16 @@ int main(int argc, char** argv) {
 	Logger::init();
 	using namespace cv;
 	
-	int captureDevice = 0;
+	int captureDevice = 1;
 	auto cam = VideoCapture(captureDevice);
-	cv::namedWindow("Capture");
-
+	cv::namedWindow("Haar Cascade");
+	
 	Timer timer("Face cascade real time");
 	
 	while(true) {
 		UMat frame;
 		Logger::logAssert(cam.read(frame), "Failed to read frame from capture device {}!", captureDevice);
-		cv::imshow("Capture", frame);
-		
-		UMat frameCopy = frame.clone();
+		cv::resize(frame, frame, { 160, 120 }, 1.0, 1.0);
 
 #if HSV_SPLIT_DETECT
 		
@@ -46,9 +44,9 @@ int main(int argc, char** argv) {
 		
 		for(uint32_t i = 0; i < contours.size(); ++i) {
 			if(cv::contourArea(contours.at(i)) < 1000.0) continue;
-			cv::drawContours(frameCopy, contours, i, { 255, 255, 255 }, 2);
+			cv::drawContours(frame, contours, i, { 255, 255, 255 }, 2);
 		}
-		cv::imshow("Contour Skin Detect", frameCopy);
+		cv::imshow("Contour Skin Detect", frame);
 		
 #elif HAAR_CASCADE
 
@@ -65,15 +63,16 @@ int main(int argc, char** argv) {
 		Logger::trace("Number of faces detected: {}", faces.size());
 
 		for(const auto& rect : faces) {
-			cv::rectangle(frameCopy, { rect.x, rect.y }, { rect.x + rect.width, rect.y + rect.height }, { 255 }, 4);
+			cv::rectangle(frame, { rect.x, rect.y }, { rect.x + rect.width, rect.y + rect.height }, { 255 }, 4);
 		}
 
-		cv::imshow("Haar Cascade", frameCopy);
+		cv::resize(frame, frame, { 640, 480 }, 1.0, 1.0);
+		cv::imshow("Haar Cascade", frame);
 		
 #endif
 
 		const auto ch = cv::waitKey(1);
-		if(ch == 27 || !static_cast<bool>(cv::getWindowProperty("Capture", WND_PROP_VISIBLE))) {
+		if(ch == 27 || !static_cast<bool>(cv::getWindowProperty("Haar Cascade", WND_PROP_VISIBLE))) {
 			break;
 		}
 	}
