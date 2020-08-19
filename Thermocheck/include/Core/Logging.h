@@ -9,7 +9,6 @@
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#include "Core/Memory.h"
 
 class Logger {
 public:
@@ -53,12 +52,10 @@ public:
 	}
 	
 	template<typename FormatString, typename ...Args>
-	static void logAssert(bool checkIfTrue, const FormatString& message, const Args&... args) {
+	static void logAssert(const bool checkIfTrue, const FormatString& message, const Args&... args) {
 #if TC_ENABLE_ASSERTS
 		if(!checkIfTrue) {
 			_logger->critical("ASSERTION FAILED!");
-			_logger->critical("FILE: ", __FILE__);
-			_logger->critical("LINE: ", __LINE__);
 			_logger->error(message, args...);
 #if PLATFORM_WINDOWS
 			__debugbreak();
@@ -71,7 +68,7 @@ public:
 
 private:
 
-	static Ref<spdlog::logger> _logger;
+	static std::shared_ptr<spdlog::logger> _logger;
 };
 
 #endif

@@ -4,7 +4,7 @@
 #include <memory>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-Ref<spdlog::logger> Logger::_logger = nullptr;
+std::shared_ptr<spdlog::logger> Logger::_logger = nullptr;
 
 void Logger::init()
 {

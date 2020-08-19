@@ -10,12 +10,18 @@ project "Thermocheck"
     pchheader "tcpch.h"
     pchsource "src/tcpch.cpp"
 
-    defines { "NOMINMAX" }
+    defines {
+        "NOMINMAX",
+        "GLFW_INCLUDE_NONE",
+    }
 
     flags { "FatalWarnings" }
 
     includedirs {
-        -- "%{wks.location}/Externals/imgui/include",
+        "%{wks.location}/Externals/glad/include",
+        "%{wks.location}/Externals/glfw3/include",
+        "%{wks.location}/Externals/imgui/include",
+        "%{wks.location}/Externals/imgui/include/imgui",
         "%{wks.location}/Externals/opencv/install/opencv/include",
         "%{wks.location}/Externals/spdlog/include",
         
@@ -30,13 +36,17 @@ project "Thermocheck"
         "src/**.cpp",
         "src/**.inl"
     }
-    
+	
+	links {
+		"Externals",
+	}
+
     postbuildcommands {
-		"{COPY} %{wks.location}/Thermocheck/assets %{cfg.targetdir}/assets"
+        "{COPY} %{wks.location}/Thermocheck/assets %{cfg.targetdir}/assets"
     }
 
     filter "system:windows"
-		cppdialect "C++17"    
+        cppdialect "C++17"    
         systemversion "latest"
         
         defines {
@@ -56,19 +66,19 @@ project "Thermocheck"
         }
         
         includedirs {
-			"/usr/local/include/opencv4"
+            "/usr/local/include/opencv4"
         }
         
         removefiles {
-			"src/tcpch.cpp"
+            "src/tcpch.cpp"
         }
         
         libdirs {
-			"/usr/lib",
-			"/usr/lib/arm-gnueabihf",
-			"/usr/local/lib",
-			"/usr/local/lib/opencv4/**",
-			"%{wks.location}/Externals/opencv/opencv/build/**"
+            "/usr/lib",
+            "/usr/lib/arm-gnueabihf",
+            "/usr/local/lib",
+            "/usr/local/lib/opencv4/**",
+            "%{wks.location}/Externals/opencv/opencv/build/**"
         }
         
         links {

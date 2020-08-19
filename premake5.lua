@@ -16,16 +16,16 @@ workspace "ThermocheckApp"
         disablewarnings {
             "4100",
             "4201",
-            "4505"
+            "4505",
+            "4996",
         }
     
     filter "system:linux"
         architecture "ARM"
         disablewarnings {
-			"unused-function",
+            "unused-function",
             "unused-parameter"
         }
-        
-        
---include "Externals"
+
+include "Externals"
 include "Thermocheck"
