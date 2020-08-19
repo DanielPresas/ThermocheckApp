@@ -2,6 +2,7 @@
 #include "Core/CVInterface.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 
 CaptureDevice CVInterface::_captureDevice;
 Texture2D* CVInterface::_framebufferImage = new Texture2D;
@@ -10,7 +11,8 @@ Texture2D* CVInterface::_framebufferImage = new Texture2D;
 #define HAAR_CASCADE 1
 
 void CVInterface::init() {
-	_captureDevice.init(1);
+	auto cap = cv::VideoCapture(1);
+	_captureDevice.init(0);
 }
 
 void CVInterface::shutdown() {
@@ -82,12 +84,25 @@ void CVInterface::update() {
 void CVInterface::drawImGui() {
 	
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
-	ImGui::SetNextWindowSize(_framebufferImage->getSize());
-	ImGui::Begin("Video Capture");
 	{
-		ImGui::GetContentRegionAvail();
-		ImGui::Image(reinterpret_cast<void*>(_framebufferImage->getRendererId()), _framebufferImage->getSize());
+		const ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoSavedSettings |
+			ImGuiWindowFlags_AlwaysAutoResize;
+		
+		ImGui::SetNextWindowSize(_framebufferImage->getSize());
+		ImGui::Begin("Video Capture", nullptr, flags);
+		{
+			// TODO :: clean this up later with glm
+			ImVec2 centre = {
+				(ImGui::GetWindowSize().x - _framebufferImage->getSize().x) * 0.5f,
+				(ImGui::GetWindowSize().y - _framebufferImage->getSize().y) * 0.5f
+			};
+			
+			ImGui::SetCursorPos(centre);
+			ImGui::Image(reinterpret_cast<void*>(_framebufferImage->getRendererId()), _framebufferImage->getSize());
+		}
+		ImGui::End();
 	}
-	ImGui::End();
 	ImGui::PopStyleVar();
 }

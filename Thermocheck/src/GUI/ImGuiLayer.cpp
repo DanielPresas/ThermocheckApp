@@ -15,7 +15,7 @@ void ImGuiLayer::init() {
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
-	io.ConfigViewportsNoTaskBarIcon = true;
+	//io.ConfigViewportsNoTaskBarIcon = true;
 
 	ImGui::StyleColorsDark();
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -25,7 +25,7 @@ void ImGuiLayer::init() {
 	}
 
 	auto* const window = Application::getWindow()->getGlfwWindow();
-	ImGui_ImplGlfw_InitForOpenGL(window, false);
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
 
@@ -97,19 +97,86 @@ void ImGuiLayer::end() {
 	}
 }
 
+static const char* aboutBody =
+R"LIT(This app is designed to detect temps and tell the user if their temp is flagged as being high.
+Questions/concerns, email ediom at [insert email here]
+)LIT";
 
 void ImGuiLayer::drawImGui() {
-	static bool demoWindow = true;
-	
-	if(ImGui::BeginMenuBar()) {
-		if(ImGui::BeginMenu("File")) {
-			if(ImGui::MenuItem("Exit")) Application::shutdown();
-			ImGui::EndMenu();
-		}
+	static bool demoWindow = false;
+	static bool aboutWindow = false;
 
-		ImGui::EndMenuBar();
+	// ----------------------------------------------------------------
+	// ----- MENU BAR -------------------------------------------------
+	// ----------------------------------------------------------------
+	{
+		if(ImGui::BeginMenuBar()) {
+
+			// File menu
+			if(ImGui::BeginMenu("File")) {
+				if(ImGui::MenuItem("Exit")) {
+					Application::shutdown();
+				}
+			
+				ImGui::EndMenu();
+			}
+
+			// Help/About menu
+			if(ImGui::BeginMenu("Help")) {
+				if(ImGui::MenuItem("About"))                aboutWindow = true;
+				if(ImGui::MenuItem("ImGui Demo Window"))    demoWindow  = true;
+
+				ImGui::EndMenu();
+			}
+		
+			ImGui::EndMenuBar();
+		}
 	}
-	
-	ImGui::ShowDemoWindow(&demoWindow);
-	
+
+	// ----------------------------------------------------------------
+	// ----- ABOUT WINDOW ---------------------------------------------
+	// ----------------------------------------------------------------
+	{
+		if(aboutWindow) {
+			
+			ImGui::SetNextWindowContentSize({ 400, 300 });
+
+			//ImGuiIO& io = ImGui::GetIO();
+			const ImVec2 centre = ImGui::GetMainViewport()->GetCenter();
+			ImGui::SetNextWindowPos(centre, ImGuiCond_Always, { 0.5f, 0.5f });
+
+			const ImGuiWindowFlags flags = 
+				ImGuiWindowFlags_NoMove           |
+				ImGuiWindowFlags_NoCollapse       |
+				ImGuiWindowFlags_NoDocking        |
+				ImGuiWindowFlags_NoResize         |
+				ImGuiWindowFlags_NoSavedSettings  |
+				ImGuiWindowFlags_AlwaysAutoResize;
+		
+			ImGui::Begin("About", nullptr, flags);
+			{
+				ImGui::Text("Thermocheck App");
+				ImGui::NewLine();
+
+				ImGui::TextWrapped(aboutBody);
+				ImGui::NewLine();
+				
+				ImGui::Text("(R) 2020 Ediom Technologies");
+				ImGui::NewLine(); ImGui::NewLine();
+
+				//ImGui::SetCursorPos({ pos.x, pos.y + 100 });
+				if(ImGui::Button("Close")) aboutWindow = false;
+			}
+			ImGui::End();
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// ----- IMGUI DEMO WINDOW ----------------------------------------
+	// ----------------------------------------------------------------
+	{
+		if(demoWindow) {
+			ImGui::ShowDemoWindow(&demoWindow);
+		}
+	}
 }
