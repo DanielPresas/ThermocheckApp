@@ -7,23 +7,22 @@
 
 class CaptureDevice {
 public:
-	struct {
-		operator int () const { return value; }
-	private:
-		int value = 0;
-	} index;
 	
 	operator cv::VideoCapture() const { return _device; }
 
 	void init(const int idx) {
 		_device = cv::VideoCapture(idx);
-		Logger::logAssert(_device.isOpened(), "Failed to open capture device!");
+		Logger::logAssert(_device.isOpened(), "Failed to open capture device {}!", idx);
+		_idx = idx;
 	}
+
+	int index() const { return _idx; }
 	bool read(cv::OutputArray image) { return _device.read(image); }
 	void release() { _device.release(); }
 
 private:
-
+	
+	int _idx = 0;
 	cv::VideoCapture _device;
 
 };

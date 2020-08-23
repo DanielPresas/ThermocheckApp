@@ -4,6 +4,7 @@
 #include "Core/Application.h"
 
 #define IMGUI_IMPL_LOADER_GLAD
+#include <glad/glad.h>
 #include <glfw/glfw3.h>
 #include <imgui/imgui.h>
 #include <imgui/examples/imgui_impl_glfw.h>
@@ -104,6 +105,7 @@ Questions/concerns, email ediom at [insert email here]
 
 void ImGuiLayer::drawImGui() {
 	static bool demoWindow = false;
+	static bool metricsWindow = false;
 	static bool aboutWindow = false;
 
 	// ----------------------------------------------------------------
@@ -113,7 +115,8 @@ void ImGuiLayer::drawImGui() {
 		if(ImGui::BeginMenuBar()) {
 
 			// File menu
-			if(ImGui::BeginMenu("File")) {
+			if(ImGui::BeginMenu("Application")) {
+				if(ImGui::MenuItem("Show Metrics")) metricsWindow = true;
 				if(ImGui::MenuItem("Exit")) {
 					Application::shutdown();
 				}
@@ -134,14 +137,30 @@ void ImGuiLayer::drawImGui() {
 	}
 
 	// ----------------------------------------------------------------
+	// ----- METRICS WINDOW -------------------------------------------
+	// ----------------------------------------------------------------
+	{
+		if(metricsWindow) {
+			ImGui::Begin("Metrics", &metricsWindow);
+			{
+				ImGuiIO& io = ImGui::GetIO(); (void)io;
+				ImGui::TextWrapped("OpenGL version: %s", glGetString(GL_VERSION));
+				ImGui::TextWrapped("GLSL version: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+				ImGui::TextWrapped("Using %s %s", glGetString(GL_VENDOR), glGetString(GL_RENDERER));
+				ImGui::TextWrapped("Framerate: %.3f FPS", io.Framerate);
+				ImGui::TextWrapped("%d active windows (%d visible)", io.MetricsActiveWindows, io.MetricsRenderWindows);
+			}
+			ImGui::End();
+		}
+	}
+	
+	// ----------------------------------------------------------------
 	// ----- ABOUT WINDOW ---------------------------------------------
 	// ----------------------------------------------------------------
 	{
 		if(aboutWindow) {
 			
 			ImGui::SetNextWindowContentSize({ 400, 300 });
-
-			//ImGuiIO& io = ImGui::GetIO();
 			const ImVec2 centre = ImGui::GetMainViewport()->GetCenter();
 			ImGui::SetNextWindowPos(centre, ImGuiCond_Always, { 0.5f, 0.5f });
 

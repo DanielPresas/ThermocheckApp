@@ -25,7 +25,7 @@ void CVInterface::update() {
 	using namespace cv;
 	
 	UMat frame;
-	Logger::logAssert(_captureDevice.read(frame) && !frame.empty(), "Failed to read frame from capture device {}!", _captureDevice.index);
+	Logger::logAssert(_captureDevice.read(frame) && !frame.empty(), "Failed to read frame from capture device {}!", _captureDevice.index());
 
 	
 	// cv::resize(frame, frame, { 160, 120 }, 1.0, 1.0);
@@ -87,12 +87,11 @@ void CVInterface::drawImGui() {
 	{
 		const ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
 		
-		ImGui::SetNextWindowSize(_captureImg->getSize());
-		//ImGui::SetNextWindowPos();
+		//ImGui::SetNextWindowSize(_captureImg->getSize());
 		ImGui::Begin("Video Capture", nullptr, flags);
 		{
-
 			const Vector2 windowSize = ImGui::GetWindowSize();
+
 			if(Vector2::length2(_captureImg->getSize()) > 0.0f) {
 				if(_captureImg->getWidth() > windowSize.x) {
 					const double ratio = windowSize.x / _captureImg->getWidth();
@@ -105,7 +104,7 @@ void CVInterface::drawImGui() {
 				}
 				if(_captureImg->getHeight() > windowSize.y) {
 
-					const double ratio = windowSize.x / _captureImg->getWidth();
+					const double ratio = windowSize.y / _captureImg->getHeight();
 					const int width    = static_cast<int>(static_cast<double>(_captureImg->getWidth()) * ratio) / 4 * 4;
 					const int height   = static_cast<int>(static_cast<double>(windowSize.y)) / 4 * 4;
 

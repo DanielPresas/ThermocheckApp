@@ -37,10 +37,10 @@ project "Thermocheck"
         "src/**.cpp",
         "src/**.inl"
     }
-	
-	links {
-		"Externals",
-	}
+    
+    links {
+        "Externals",
+    }
 
     postbuildcommands {
         "{COPY} %{wks.location}/Thermocheck/assets %{cfg.targetdir}/assets"
@@ -162,7 +162,7 @@ project "Thermocheck"
             "TC_DEBUG=0",
             "TC_RELEASE=1",
             "TC_DIST=0",
-            "TC_ENABLE_ASSERTS=0"
+            "TC_ENABLE_ASSERTS=1"
         }
         runtime "Release"
         optimize "on"
