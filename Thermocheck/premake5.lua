@@ -25,6 +25,7 @@ project "Thermocheck"
         "%{wks.location}/Externals/imgui/include/imgui",
         "%{wks.location}/Externals/opencv/install/opencv/include",
         "%{wks.location}/Externals/spdlog/include",
+        "%{wks.location}/Externals/stb/include",
         
         "include",
         "include/Examples/include"

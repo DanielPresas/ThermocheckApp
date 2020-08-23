@@ -1,10 +1,12 @@
 #include "tcpch.h"
 #include "Core/Window.h"
 
+
 #include "Core/Application.h"
 #include "GUI/GraphicsContext.h"
 
 #include <glfw/glfw3.h>
+#include <stb/stb_image.h>
 
 static bool glfwInitialized = false;
 
@@ -32,6 +34,11 @@ Window::Window(const WindowProperties& properties) :
 	glfwMakeContextCurrent(_glfwWindow);
 	glfwSetWindowUserPointer(_glfwWindow, &_properties);
 
+	GLFWimage icon;
+	icon.pixels = stbi_load("assets/branding/EdiomLogo.png", &icon.width, &icon.height, nullptr, 0);
+	glfwSetWindowIcon(_glfwWindow, 1, &icon);
+	stbi_image_free(icon.pixels);
+	
 	glfwSwapInterval(0);
 
 	GraphicsContext::init();

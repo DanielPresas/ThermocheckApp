@@ -14,7 +14,8 @@ project "Externals"
         "glad/include",
         "glfw3/include",
         "imgui/include/imgui",
-        "opencv/install/opencv/include"
+        "opencv/install/opencv/include",
+        "stb/include/stb"
     }
 
     files {
@@ -44,6 +45,15 @@ project "Externals"
         "imgui/include/imgui/imgui_demo.cpp",
         "imgui/include/imgui/imgui_draw.cpp",
         "imgui/include/imgui/imgui_widgets.cpp",
+        
+        "stb/include/stb/stb_image.h",
+        "stb/include/stb/stb_image_write.h",
+        "stb/include/stb/stb_impl.h",
+        "stb/include/stb/stb_include.h",
+        "stb/include/stb/stb_perlin.h",
+        "stb/include/stb/stb_rect_pack.h",
+        "stb/include/stb/stb_truetype.h",
+        "stb/src/stb_impl.cpp"
     }
 
     filter "system:linux"

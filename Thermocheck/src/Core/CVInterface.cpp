@@ -12,7 +12,7 @@ Texture2D* CVInterface::_captureImg = new Texture2D;
 #define HAAR_CASCADE 0
 
 void CVInterface::init() {
-	_captureDevice.init(0);
+	_captureDevice.init(1);
 }
 
 void CVInterface::shutdown() {
@@ -27,8 +27,6 @@ void CVInterface::update() {
 	UMat frame;
 	Logger::logAssert(_captureDevice.read(frame) && !frame.empty(), "Failed to read frame from capture device {}!", _captureDevice.index());
 
-	
-	// cv::resize(frame, frame, { 160, 120 }, 1.0, 1.0);
 
 #if HSV_SPLIT_DETECT
 
@@ -67,18 +65,9 @@ void CVInterface::update() {
 		cv::rectangle(frame, { rect.x, rect.y }, { rect.x + rect.width, rect.y + rect.height }, { 255 }, 4);
 	}
 
-	//cv::resize(frame, frame, { 640, 480 }, 1.0, 1.0);
-	//cv::imshow("Haar Cascade", frame);
-
 #endif
 
 	_captureImg->setData(frame);
-
-
-	//const auto ch = cv::waitKey(1);
-	//if(ch == 27 || !static_cast<bool>(cv::getWindowProperty("Haar Cascade", WND_PROP_VISIBLE))) {
-	//	
-	//}
 }
 
 void CVInterface::drawImGui() {
@@ -86,8 +75,6 @@ void CVInterface::drawImGui() {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
 	{
 		const ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
-		
-		//ImGui::SetNextWindowSize(_captureImg->getSize());
 		ImGui::Begin("Video Capture", nullptr, flags);
 		{
 			const Vector2 windowSize = ImGui::GetWindowSize();
@@ -95,6 +82,11 @@ void CVInterface::drawImGui() {
 			if(Vector2::length2(_captureImg->getSize()) > 0.0f) {
 				if(_captureImg->getWidth() > windowSize.x) {
 					const double ratio = windowSize.x / _captureImg->getWidth();
+					//
+					// OpenGL doesn't like textures that aren't multiples of 4 because of GPU word length,
+					// so we are ensuring that our width and height are always multiples of 4 by taking
+					// advantage of integer division. 
+					//
 					const int width    = static_cast<int>(static_cast<double>(windowSize.x)) / 4 * 4;
 					const int height   = static_cast<int>(static_cast<double>(_captureImg->getHeight()) * ratio) / 4 * 4;
 
@@ -105,6 +97,11 @@ void CVInterface::drawImGui() {
 				if(_captureImg->getHeight() > windowSize.y) {
 
 					const double ratio = windowSize.y / _captureImg->getHeight();
+					//
+					// OpenGL doesn't like textures that aren't multiples of 4 because of GPU word length,
+					// so we are ensuring that our width and height are always multiples of 4 by taking
+					// advantage of integer division. 
+					//
 					const int width    = static_cast<int>(static_cast<double>(_captureImg->getWidth()) * ratio) / 4 * 4;
 					const int height   = static_cast<int>(static_cast<double>(windowSize.y)) / 4 * 4;
 
