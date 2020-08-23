@@ -23,7 +23,7 @@
 #include <vector>
 
 #include "Core/Logging.h"
-#include "Core/Random.h"
-#include "Core/Timer.h"
+#include "Utils/Random.h"
+#include "Utils/Timer.h"
 
 #endif

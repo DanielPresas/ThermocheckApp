@@ -17,6 +17,7 @@ workspace "ThermocheckApp"
             "4100",
             "4201",
             "4505",
+            "4189",
             "4996",
         }
     
@@ -24,7 +25,8 @@ workspace "ThermocheckApp"
         architecture "ARM"
         disablewarnings {
             "unused-function",
-            "unused-parameter"
+            "unused-parameter",
+            "unused-variable"
         }
 
 include "Externals"

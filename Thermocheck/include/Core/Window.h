@@ -1,6 +1,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include "Utils/Math.h"
+
 #include <string>
 
 struct GLFWwindow;
@@ -21,6 +23,7 @@ public:
 	
 	uint32_t getWidth() const { return _properties.width; }
 	uint32_t getHeight() const { return _properties.height; }
+	Vector2  getSize() const { return { _properties.width, _properties.height }; }
 	
 	GLFWwindow* getGlfwWindow() const { return _glfwWindow; }
 	

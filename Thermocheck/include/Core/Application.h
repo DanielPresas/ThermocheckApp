@@ -9,7 +9,11 @@ public:
 
 	Application();
 	Application(std::string&& title, uint32_t width, uint32_t height);
-	~Application();
+	virtual ~Application();
+
+	Application(const Application&) = delete;
+
+	Application& operator=(const Application&) = delete;
 
 	void run() const;
 	// void onEvent();

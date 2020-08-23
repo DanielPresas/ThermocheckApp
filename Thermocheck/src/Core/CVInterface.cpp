@@ -1,17 +1,17 @@
 #include "tcpch.h"
 #include "Core/CVInterface.h"
 
-#include <imgui.h>
-#include <imgui_internal.h>
+#include "Utils/Math.h"
+
+#include <imgui/imgui.h>
 
 CaptureDevice CVInterface::_captureDevice;
-Texture2D* CVInterface::_framebufferImage = new Texture2D;
+Texture2D* CVInterface::_captureImg = new Texture2D;
 
 #define HSV_SPLIT_DETECT 0
-#define HAAR_CASCADE 1
+#define HAAR_CASCADE 0
 
 void CVInterface::init() {
-	auto cap = cv::VideoCapture(1);
 	_captureDevice.init(0);
 }
 
@@ -72,7 +72,7 @@ void CVInterface::update() {
 
 #endif
 
-	_framebufferImage->setData(frame);
+	_captureImg->setData(frame);
 
 
 	//const auto ch = cv::waitKey(1);
@@ -85,22 +85,40 @@ void CVInterface::drawImGui() {
 	
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
 	{
-		const ImGuiWindowFlags flags =
-			ImGuiWindowFlags_NoCollapse |
-			ImGuiWindowFlags_NoSavedSettings |
-			ImGuiWindowFlags_AlwaysAutoResize;
+		const ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
 		
-		ImGui::SetNextWindowSize(_framebufferImage->getSize());
+		ImGui::SetNextWindowSize(_captureImg->getSize());
+		//ImGui::SetNextWindowPos();
 		ImGui::Begin("Video Capture", nullptr, flags);
 		{
-			// TODO :: clean this up later with glm
-			ImVec2 centre = {
-				(ImGui::GetWindowSize().x - _framebufferImage->getSize().x) * 0.5f,
-				(ImGui::GetWindowSize().y - _framebufferImage->getSize().y) * 0.5f
-			};
+
+			const Vector2 windowSize = ImGui::GetWindowSize();
+			if(Vector2::length2(_captureImg->getSize()) > 0.0f) {
+				if(_captureImg->getWidth() > windowSize.x) {
+					const double ratio = windowSize.x / _captureImg->getWidth();
+					const int width    = static_cast<int>(static_cast<double>(windowSize.x)) / 4 * 4;
+					const int height   = static_cast<int>(static_cast<double>(_captureImg->getHeight()) * ratio) / 4 * 4;
+
+					cv::UMat img = _captureImg->getUMat().clone();
+					cv::resize(img, img, { width, height });
+					_captureImg->setData(img);
+				}
+				if(_captureImg->getHeight() > windowSize.y) {
+
+					const double ratio = windowSize.x / _captureImg->getWidth();
+					const int width    = static_cast<int>(static_cast<double>(_captureImg->getWidth()) * ratio) / 4 * 4;
+					const int height   = static_cast<int>(static_cast<double>(windowSize.y)) / 4 * 4;
+
+					cv::UMat img = _captureImg->getUMat().clone();
+					cv::resize(img, img, { width, height });
+					_captureImg->setData(img);
+				}
+			}
+			
+			const Vector2 centre = (windowSize - _captureImg->getSize()) * 0.5f;
 			
 			ImGui::SetCursorPos(centre);
-			ImGui::Image(reinterpret_cast<void*>(_framebufferImage->getRendererId()), _framebufferImage->getSize());
+			ImGui::Image(reinterpret_cast<void*>(_captureImg->getRendererId()), _captureImg->getSize());
 		}
 		ImGui::End();
 	}

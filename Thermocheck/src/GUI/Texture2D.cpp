@@ -37,6 +37,7 @@ void Texture2D::initTexture2D(cv::InputArray arr) {
 	glTextureParameteri(_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+	// glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	
 	glTextureStorage2D(_id, 1, GL_RGB8, mat.cols, mat.rows);
 	glTextureSubImage2D(_id, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, arr.getMat().data);

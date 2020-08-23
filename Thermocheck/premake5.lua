@@ -20,6 +20,7 @@ project "Thermocheck"
     includedirs {
         "%{wks.location}/Externals/glad/include",
         "%{wks.location}/Externals/glfw3/include",
+        "%{wks.location}/Externals/glm/include",
         "%{wks.location}/Externals/imgui/include",
         "%{wks.location}/Externals/imgui/include/imgui",
         "%{wks.location}/Externals/opencv/install/opencv/include",

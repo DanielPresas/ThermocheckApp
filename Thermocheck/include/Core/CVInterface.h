@@ -42,7 +42,7 @@ public:
 private:
 
 	static CaptureDevice _captureDevice;
-	static Texture2D* _framebufferImage;
+	static Texture2D* _captureImg;
 	
 };
 
