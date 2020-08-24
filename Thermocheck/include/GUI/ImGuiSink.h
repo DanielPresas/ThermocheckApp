@@ -20,15 +20,9 @@ protected:
 		spdlog::memory_buf_t formatted;
 		spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
 		ImGuiConsole::sink({ fmt::to_string(formatted), msg.level });
-		flush_();
 	}
 	
-	void flush_() override {
-		ImGuiConsole::flush();
-	}
-
-private:
-
+	void flush_() override {}
 	
 };
 

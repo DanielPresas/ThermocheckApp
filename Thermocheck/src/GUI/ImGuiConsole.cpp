@@ -1,6 +1,10 @@
 #include "tcpch.h"
 #include "GUI/ImGuiConsole.h"
 
+#include <imgui/imgui.h>
+
+std::vector<ConsoleMessage> ImGuiConsole::_consoleBuffer;
+
 static ImVec4 getMessageColor(const spdlog::level::level_enum level) {
 	using SpdlogLevel = spdlog::level::level_enum;
 	
@@ -15,19 +19,35 @@ static ImVec4 getMessageColor(const spdlog::level::level_enum level) {
 	}
 }
 
+void ImGuiConsole::init() {
+	_consoleBuffer.reserve(110);
+}
+
+void ImGuiConsole::shutdown() {
+	_consoleBuffer.clear();
+}
+
 void ImGuiConsole::drawImGui() {
+
+	while(_consoleBuffer.size() > 100) {
+		_consoleBuffer.erase(_consoleBuffer.begin());
+	}
 
 	const ImGuiWindowFlags flags =
 		ImGuiWindowFlags_HorizontalScrollbar;
 	
 	ImGui::BeginChild("Scroll Region", { 0, 0 }, true, flags);
 	{
-		if(_flushConsole) {
-			for(const auto& message : _consoleBuffer) {
-				ImGui::PushStyleColor(ImGuiCol_Text, getMessageColor(message.getLevel()));
-				ImGui::TextUnformatted(message.getMessage().c_str());
-				ImGui::PopStyleColor();
-			}
+		
+		for(const auto& message : _consoleBuffer) {
+			ImGui::PushStyleColor(ImGuiCol_Text, getMessageColor(message.getLevel()));
+			ImGui::TextUnformatted(message.getMessage().c_str());
+			ImGui::PopStyleColor();
+		}
+
+		if(_flags & AUTOSCROLL && ImGui::GetScrollMaxY() > 0) {
+			ImGui::SetScrollY(ImGui::GetScrollMaxY());
+			_flags &= ~AUTOSCROLL;
 		}
 	}
 	ImGui::EndChild();
