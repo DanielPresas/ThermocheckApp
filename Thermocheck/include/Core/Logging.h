@@ -7,8 +7,6 @@
 
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-
 
 class Logger {
 public:
@@ -41,6 +39,13 @@ public:
 	static void info(const FormatString& message, const Args&... args) {
 #if TC_DEBUG || TC_RELEASE
 		_logger->info(message, args...);
+#endif
+	}
+
+	template<typename FormatString, typename ...Args>
+	static void debug(const FormatString& message, const Args&... args) {
+#if TC_DEBUG || TC_RELEASE
+		_logger->debug(message, args...);
 #endif
 	}
 	

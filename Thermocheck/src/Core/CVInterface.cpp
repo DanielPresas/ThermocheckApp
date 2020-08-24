@@ -89,6 +89,7 @@ void CVInterface::drawImGui() {
 					//
 					const int width    = static_cast<int>(static_cast<double>(windowSize.x)) / 4 * 4;
 					const int height   = static_cast<int>(static_cast<double>(_captureImg->getHeight()) * ratio) / 4 * 4;
+					Logger::trace("Resizing image: ({} x {})", width, height);
 
 					cv::UMat img = _captureImg->getUMat().clone();
 					cv::resize(img, img, { width, height });
@@ -104,6 +105,7 @@ void CVInterface::drawImGui() {
 					//
 					const int width    = static_cast<int>(static_cast<double>(_captureImg->getWidth()) * ratio) / 4 * 4;
 					const int height   = static_cast<int>(static_cast<double>(windowSize.y)) / 4 * 4;
+					Logger::trace("Resizing image: ({} x {})", width, height);
 
 					cv::UMat img = _captureImg->getUMat().clone();
 					cv::resize(img, img, { width, height });

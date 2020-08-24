@@ -2,6 +2,7 @@
 #include "GUI/ImGuiLayer.h"
 
 #include "Core/Application.h"
+#include "GUI/ImGuiConsole.h"
 
 #define IMGUI_IMPL_LOADER_GLAD
 #include <glad/glad.h>
@@ -104,9 +105,10 @@ Questions/concerns, email ediom at [insert email here]
 )LIT";
 
 void ImGuiLayer::drawImGui() {
-	static bool demoWindow = false;
-	static bool metricsWindow = false;
 	static bool aboutWindow = false;
+	static bool demoWindow = false;
+	static bool consoleWindow = false;
+	static bool metricsWindow = false;
 
 	// ----------------------------------------------------------------
 	// ----- MENU BAR -------------------------------------------------
@@ -116,6 +118,7 @@ void ImGuiLayer::drawImGui() {
 
 			// File menu
 			if(ImGui::BeginMenu("Application")) {
+				if(ImGui::MenuItem("Show Console")) consoleWindow = true;
 				if(ImGui::MenuItem("Show Metrics")) metricsWindow = true;
 				if(ImGui::MenuItem("Exit")) {
 					Application::shutdown();
@@ -183,13 +186,28 @@ void ImGuiLayer::drawImGui() {
 				ImGui::Text("(R) 2020 Ediom Technologies");
 				ImGui::NewLine(); ImGui::NewLine();
 
-				//ImGui::SetCursorPos({ pos.x, pos.y + 100 });
+				// @Incomplete: Center the close button in the window
 				if(ImGui::Button("Close")) aboutWindow = false;
 			}
 			ImGui::End();
 		}
 	}
 
+	// ----------------------------------------------------------------
+	// ----- LOG CONSOLE WINDOW ---------------------------------------
+	// ----------------------------------------------------------------
+	{
+		if(consoleWindow) {
+			ImGui::SetNextWindowSize({ 640, 480 }, ImGuiCond_FirstUseEver);
+			ImGui::Begin("Log Console", &consoleWindow);
+			{
+				ImGuiConsole::drawImGui();
+			}
+			ImGui::End();
+			
+		}
+	}
+	
 	// ----------------------------------------------------------------
 	// ----- IMGUI DEMO WINDOW ----------------------------------------
 	// ----------------------------------------------------------------
