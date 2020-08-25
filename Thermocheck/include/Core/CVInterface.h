@@ -10,19 +10,15 @@ public:
 	
 	operator cv::VideoCapture() const { return _device; }
 
-	void init(const int idx) {
-		_device = cv::VideoCapture(idx);
-		Logger::logAssert(_device.isOpened(), "Failed to open capture device {}!", idx);
-		_idx = idx;
-	}
+	bool init(int idx);
 
-	int index() const { return _idx; }
-	bool read(cv::OutputArray image) { return _device.read(image); }
-	void release() { _device.release(); }
+	int index() const { return _index; }
+	bool read(cv::OutputArray image) { return _device.isOpened() ? _device.read(image) : false; }
+	void release() { _device.release(); _index = -1; }
 
 private:
 	
-	int _idx = 0;
+	int _index = -1;
 	cv::VideoCapture _device;
 
 };
@@ -36,12 +32,11 @@ public:
 	static void update();
 	static void drawImGui();
 
-	//void onEvent();
-
 private:
 
 	static CaptureDevice _captureDevice;
 	static Texture2D* _captureImg;
+	static inline uint32_t _numDevices = 0;
 	
 };
 

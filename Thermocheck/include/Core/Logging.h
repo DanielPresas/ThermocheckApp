@@ -2,7 +2,7 @@
 #define LOGGING_H
 
 #if PLATFORM_LINUX
-#include <signal.h>
+#	include <signal.h>
 #endif
 
 #include <spdlog/spdlog.h>
@@ -16,30 +16,22 @@ public:
 	
 	template<typename FormatString, typename ...Args>
 	static void critical(const FormatString& message, const Args&... args) {
-#if TC_DEBUG || TC_RELEASE
 		_logger->critical(message, args...);
-#endif
 	}
 	
 	template<typename FormatString, typename ...Args>
 	static void error(const FormatString& message, const Args&... args) {
-#if TC_DEBUG || TC_RELEASE
 		_logger->error(message, args...);
-#endif
 	}
 	
 	template<typename FormatString, typename ...Args>
 	static void warning(const FormatString& message, const Args&... args) {
-#if TC_DEBUG || TC_RELEASE
 		_logger->warn(message, args...);
-#endif
 	}
 	
 	template<typename FormatString, typename ...Args>
 	static void info(const FormatString& message, const Args&... args) {
-#if TC_DEBUG || TC_RELEASE
 		_logger->info(message, args...);
-#endif
 	}
 
 	template<typename FormatString, typename ...Args>
@@ -51,9 +43,7 @@ public:
 	
 	template<typename FormatString, typename ...Args>
 	static void trace(const FormatString& message, const Args&... args) {
-#if TC_DEBUG || TC_RELEASE
 		_logger->trace(message, args...);
-#endif
 	}
 	
 	template<typename FormatString, typename ...Args>
@@ -62,11 +52,11 @@ public:
 		if(!checkIfTrue) {
 			_logger->critical("ASSERTION FAILED!");
 			_logger->error(message, args...);
-#if PLATFORM_WINDOWS
+#	if PLATFORM_WINDOWS
 			__debugbreak();
-#elif PLATFORM_LINUX
+#	elif PLATFORM_LINUX
 			raise(SIGTRAP);
-#endif
+#	endif
 		}
 #endif
 	}

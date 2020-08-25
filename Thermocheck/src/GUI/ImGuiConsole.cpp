@@ -52,50 +52,52 @@ void ImGuiConsole::drawImGui(bool* show) {
 		// ------------------------------
 		// ----- Header -----------------
 		// ------------------------------
-		
-		//ImGui::PushItemWidth(-1);
-		ImGui::Text("Display Level"); ImGui::SameLine();
-		ImGui::PushItemWidth(ImGui::CalcTextSize("Critical").x * 1.5f);
-		if(ImGui::BeginCombo("##Message Level Filter", getLevelName(_consoleLevel)/*, ImGuiComboFlags_NoArrowButton*/))
 		{
-			for(uint8_t i = 0; i < 7; ++i) {
-				const bool isSelected = (_consoleLevel == static_cast<SpdlogLevel>(i));//(i == index);
-				if(ImGui::Selectable(getLevelName(static_cast<SpdlogLevel>(i)), isSelected)) {
-					_consoleLevel = static_cast<SpdlogLevel>(i);
-				}
+			ImGui::Text("Display Level"); ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::CalcTextSize("Critical").x * 1.5f);
+			if(ImGui::BeginCombo("##Message Level Filter", getLevelName(_consoleLevel)/*, ImGuiComboFlags_NoArrowButton*/))
+			{
+				for(uint8_t i = 0; i < 7; ++i) {
+					const bool isSelected = (_consoleLevel == static_cast<SpdlogLevel>(i));//(i == index);
+					if(ImGui::Selectable(getLevelName(static_cast<SpdlogLevel>(i)), isSelected)) {
+						_consoleLevel = static_cast<SpdlogLevel>(i);
+					}
 
-				if(isSelected) ImGui::SetItemDefaultFocus();
-			}
+					if(isSelected) ImGui::SetItemDefaultFocus();
+				}
 			
-			ImGui::EndCombo();
+				ImGui::EndCombo();
+			}
+			ImGui::PopItemWidth();
+			ImGui::SameLine();
+			ImGui::Checkbox("Enable Autoscroll", &_autoscroll);
 		}
-		ImGui::PopItemWidth();
-		ImGui::SameLine();
-		ImGui::Checkbox("Enable Autoscroll", &_autoscroll);
 		
 		// ------------------------------
 		// ----- Scroll region ----------
 		// ------------------------------
-		const ImGuiWindowFlags flags =
-			ImGuiWindowFlags_HorizontalScrollbar;
-
-		ImGui::BeginChild("Scroll Region", { 0, 0 }, true, flags);
 		{
+			const ImGuiWindowFlags flags =
+				ImGuiWindowFlags_HorizontalScrollbar;
 
-			for(const auto& message : _consoleBuffer) {
-				if(message.getLevel() >= _consoleLevel) {
-					ImGui::PushStyleColor(ImGuiCol_Text, getMessageColor(message.getLevel()));
-					ImGui::TextUnformatted(message.getMessage().c_str());
-					ImGui::PopStyleColor();
+			ImGui::BeginChild("Scroll Region", { 0, 0 }, true, flags);
+			{
+
+				for(const auto& message : _consoleBuffer) {
+					if(message.getLevel() >= _consoleLevel) {
+						ImGui::PushStyleColor(ImGuiCol_Text, getMessageColor(message.getLevel()));
+						ImGui::TextUnformatted(message.getMessage().c_str());
+						ImGui::PopStyleColor();
+					}
+				}
+
+				if(_flags & AUTOSCROLL && ImGui::GetScrollMaxY() > 0) {
+					ImGui::SetScrollY(ImGui::GetScrollMaxY());
+					_flags &= ~AUTOSCROLL;
 				}
 			}
-
-			if(_flags & AUTOSCROLL && ImGui::GetScrollMaxY() > 0) {
-				ImGui::SetScrollY(ImGui::GetScrollMaxY());
-				_flags &= ~AUTOSCROLL;
-			}
+			ImGui::EndChild();
 		}
-		ImGui::EndChild();
 	}
 	ImGui::End();
 }

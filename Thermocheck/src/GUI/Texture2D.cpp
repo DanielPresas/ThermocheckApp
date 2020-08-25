@@ -10,27 +10,28 @@ Texture2D::~Texture2D() {
 }
 
 void Texture2D::setData(cv::InputArray arr) {
+	_empty = arr.empty();
 
-	if(_id <= 0) {
-		initTexture2D(arr);
-		return;
+	if(!_empty) {
+		if(_id <= 0) {
+			initTexture2D(arr);
+			return;
+		}
+
+		if(arr.size() != mat.size()) {
+			glDeleteTextures(1, &_id);
+			mat.release();
+			initTexture2D(arr);
+			return;
+		}
+		
+		glTextureSubImage2D(_id, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, arr.getMat().data);
 	}
-
-	if(arr.size() != mat.size()) {
-		glDeleteTextures(1, &_id);
-		mat.release();
-		initTexture2D(arr);
-		return;
-	}
-
-	Logger::logAssert(!arr.empty(), "No data in given UMat argument!");
-	glTextureSubImage2D(_id, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, arr.getMat().data);
 }
 
 void Texture2D::initTexture2D(cv::InputArray arr) {
-	Logger::logAssert(!arr.empty(), "No data in given image!");
 	mat = arr.getUMat();
-
+	
 	glCreateTextures(GL_TEXTURE_2D, 1, &_id);
 	glTextureParameteri(_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
