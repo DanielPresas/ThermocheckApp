@@ -1,8 +1,6 @@
 #ifndef IMGUI_CONSOLE_H
 #define IMGUI_CONSOLE_H
 
-#include <queue>
-
 class ConsoleMessage {
 
 	using SpdlogLevel = spdlog::level::level_enum;
@@ -27,9 +25,10 @@ private:
 class ImGuiConsole {
 
 	using SpdlogLevel = spdlog::level::level_enum;
+	using ConsoleMessageBuffer = std::vector<ConsoleMessage>;
 
-	enum Flags : uint32_t {
-		AUTOSCROLL = 1 << 0,
+	enum Flags {
+		AUTOSCROLL = 1
 	};
 	
 public:
@@ -38,21 +37,26 @@ public:
 	static void shutdown();
 	
 	static void sink(ConsoleMessage&& message) {
-		_consoleBuffer.emplace_back(message);
-		_flags |= AUTOSCROLL;
+		if (message.getLevel() >= _consoleLevel){
+			_consoleBuffer.emplace_back(message);
+			if(_autoscroll) _flags |= AUTOSCROLL;
+		}
 	}
 	
-	static void drawImGui();
+	static void drawImGui(bool* show = nullptr);
 	
-	static void setLevel(const SpdlogLevel level) { _consoleLevel = level;  }
-	
-	//static void setAutoScroll(const bool scroll) { if(scroll) _flags |= AUTOSCROLL; else _flags &= ~AUTOSCROLL; }
+	static void setLevel(const SpdlogLevel level)     { _consoleLevel = level; }
+	static void setMessageLimit(const uint32_t limit) { _messageLimit = limit; }
+	static void enableAutoScroll(const bool scroll)   { _autoscroll   = scroll; }
 
 private:
 
-	static std::vector<ConsoleMessage> _consoleBuffer;
+	static ConsoleMessageBuffer _consoleBuffer;
 	
 	static inline SpdlogLevel _consoleLevel = SpdlogLevel::trace;
+	static inline uint32_t    _messageLimit = 100;
+	static inline bool        _autoscroll   = true;
+	
 	static inline uint32_t _flags;
 };
 

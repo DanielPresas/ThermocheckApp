@@ -199,12 +199,7 @@ void ImGuiLayer::drawImGui() {
 	{
 		if(consoleWindow) {
 			ImGui::SetNextWindowSize({ 640, 480 }, ImGuiCond_FirstUseEver);
-			ImGui::Begin("Log Console", &consoleWindow);
-			{
-				ImGuiConsole::drawImGui();
-			}
-			ImGui::End();
-			
+			ImGuiConsole::drawImGui(&consoleWindow);
 		}
 	}
 	
