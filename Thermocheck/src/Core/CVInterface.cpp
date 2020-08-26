@@ -8,6 +8,21 @@
 CaptureDevice CVInterface::_captureDevice;
 Texture2D* CVInterface::_captureImg = new Texture2D;
 
+void CVInterface::refreshDeviceList() {
+	int idx = 0;
+	while(true) {
+		if(!_captureDevice.init(idx)) {
+			break;
+		}
+
+		_captureDevice.release();
+		++idx;
+	}
+
+	Logger::info("Number of connected devices: {}", idx);
+	_numDevices = idx;
+}
+
 bool CaptureDevice::init(const int idx) {
 	_device = cv::VideoCapture(idx);
 	if(!_device.isOpened()) {
@@ -19,26 +34,10 @@ bool CaptureDevice::init(const int idx) {
 }
 
 #define HSV_SPLIT_DETECT 0
-#define HAAR_CASCADE 0
+#define HAAR_CASCADE 1
 
 void CVInterface::init() {
-
-	int idx = 0;
-	while(true) {
-		Logger::debug("Checking device at index {}...", idx);
-
-		if(!_captureDevice.init(idx)) {
-			Logger::debug("No device found at index {}.", idx);
-			break;
-		}
-
-		Logger::debug("Device found at index {}.", idx);
-		_captureDevice.release();
-		++idx;
-	}
-
-	_numDevices = idx;
-	//_captureDevice.init(1);
+	refreshDeviceList();
 }
 
 void CVInterface::shutdown() {
@@ -48,50 +47,61 @@ void CVInterface::shutdown() {
 void CVInterface::update() {
 	
 	using namespace cv;
+
+	// Early bail if there is no initialized capture device
+	if(!_captureDevice.isInitialized()) {
+		return;
+	}
 	
 	UMat frame;
 	const bool success = _captureDevice.read(frame) && !frame.empty();
-	//Logger::logAssert(success, "Failed to read frame from capture device {}!", _captureDevice.index());
-
+	if(!success) {
+		Logger::error("Failed to read frame from capture device {}!", _captureDevice.index() + 1);
+		Logger::error("Releasing capture device {}...", _captureDevice.index() + 1);
+		_captureDevice.release();
+	}
+	else {
 
 #if HSV_SPLIT_DETECT
 
-	UMat hsv; cv::cvtColor(frame, hsv, COLOR_BGR2HSV);
-	std::array<Mat, 3> hsvChannels; cv::split(hsv, hsvChannels);
+		UMat hsv; cv::cvtColor(frame, hsv, COLOR_BGR2HSV);
+		std::array<Mat, 3> hsvChannels; cv::split(hsv, hsvChannels);
 
-	UMat minSat, maxHue;
-	UMat finalMat;
-	cv::threshold(hsvChannels[0], maxHue, 15, 255, THRESH_BINARY_INV);
-	cv::threshold(hsvChannels[1], minSat, 40, 255, THRESH_BINARY);
-	cv::bitwise_and(minSat, maxHue, finalMat);
-	cv::imshow("HSV Split", finalMat);
+		UMat minSat, maxHue;
+		UMat finalMat;
+		cv::threshold(hsvChannels[0], maxHue, 15, 255, THRESH_BINARY_INV);
+		cv::threshold(hsvChannels[1], minSat, 40, 255, THRESH_BINARY);
+		cv::bitwise_and(minSat, maxHue, finalMat);
+		cv::imshow("HSV Split", finalMat);
 
-	std::vector<Mat> contours; cv::findContours(finalMat, contours, RETR_TREE, CHAIN_APPROX_SIMPLE);
+		std::vector<Mat> contours; cv::findContours(finalMat, contours, RETR_TREE, CHAIN_APPROX_SIMPLE);
 
-	for(uint32_t i = 0; i < contours.size(); ++i) {
-		if(cv::contourArea(contours.at(i)) < 1000.0) continue;
-		cv::drawContours(frame, contours, i, { 255, 255, 255 }, 2);
-	}
-	cv::imshow("Contour Skin Detect", frame);
+		for(uint32_t i = 0; i < contours.size(); ++i) {
+			if(cv::contourArea(contours.at(i)) < 1000.0) continue;
+			cv::drawContours(frame, contours, i, { 255, 255, 255 }, 2);
+		}
+		cv::imshow("Contour Skin Detect", frame);
 
 #elif HAAR_CASCADE
 
-	UMat gray; cv::cvtColor(frame, gray, COLOR_BGR2GRAY);
-	auto faceCascade = CascadeClassifier("assets/haarcascade_frontalface_default.xml");
-	Logger::logAssert(!faceCascade.empty(), "Failed to load cascade classifier!");
+		UMat gray; cv::cvtColor(frame, gray, COLOR_BGR2GRAY);
+		auto faceCascade = CascadeClassifier("assets/haarcascade_frontalface_default.xml");
+		Logger::logAssert(!faceCascade.empty(), "Failed to load cascade classifier!");
 
-	std::vector<Rect> faces;
-	{
-		Timer timer("Haar Cascade", true);
-		faceCascade.detectMultiScale(gray, faces, 1.1, 5, 0, { 40, 40 });
-	}
-	Logger::trace("Number of faces detected: {}", faces.size());
+		std::vector<Rect> faces;
+		{
+			Timer timer("Haar Cascade", true);
+			faceCascade.detectMultiScale(gray, faces, 1.1, 5, 0, { 40, 40 });
+		}
+		Logger::trace("Number of faces detected: {}", faces.size());
 
-	for(const auto& rect : faces) {
-		cv::rectangle(frame, { rect.x, rect.y }, { rect.x + rect.width, rect.y + rect.height }, { 255 }, 4);
-	}
+		for(const auto& rect : faces) {
+			cv::rectangle(frame, { rect.x, rect.y }, { rect.x + rect.width, rect.y + rect.height }, { 255 }, 4);
+		}
 
 #endif
+
+	}
 
 	_captureImg->setData(frame);
 }
@@ -165,14 +175,14 @@ void CVInterface::drawImGui() {
 		ImGui::Begin("Options", nullptr);
 		{
 			std::string name;
-			if(_captureDevice.index() >= 0) name = "Device " + std::to_string(_captureDevice.index());
+			if(_captureDevice.index() >= 0) name = "Device " + std::to_string(_captureDevice.index() + 1);
 			else                            name = "Select a device...";
 
 			ImGui::PushItemWidth(ImGui::CalcTextSize("Select a device...").x * 1.5f);
 			if(ImGui::BeginCombo("Active Capture Device", name.c_str())) {
 				for(uint32_t i = 0; i < _numDevices; ++i) {
 					const bool selected = (_captureDevice.index() == static_cast<int>(i));
-					name = "Device " + std::to_string(i);
+					name = "Device " + std::to_string(i + 1);
 					if(ImGui::Selectable(name.c_str(), selected)) {
 						if(!selected) {
 							_captureDevice.release();
@@ -183,6 +193,12 @@ void CVInterface::drawImGui() {
 				ImGui::EndCombo();
 			}
 			ImGui::PopItemWidth();
+
+			ImGui::Text("Devices Connected: %u", _numDevices);
+			ImGui::SameLine();
+			if(ImGui::Button("Refresh Device List")) {
+				refreshDeviceList();
+			}
 		}
 		ImGui::End();
 	}

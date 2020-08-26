@@ -22,7 +22,7 @@ private:
 	bool _stopped = true;
 	std::string _name;
 
-	static uint32_t _id;
+	static inline uint32_t _id = 0;
 };
 
 #endif

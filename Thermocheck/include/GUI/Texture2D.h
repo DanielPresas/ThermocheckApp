@@ -27,7 +27,7 @@ private:
 	void initTexture2D(cv::InputArray arr);
 	
 	cv::UMat mat;
-	bool _empty = false;
+	bool _empty = true;
 	uint32_t _id = 0;
 	
 };

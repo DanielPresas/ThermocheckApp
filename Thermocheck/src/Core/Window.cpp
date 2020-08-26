@@ -16,8 +16,11 @@ Window::Window() :
 Window::Window(const WindowProperties& properties) :
 	_properties(properties)
 {
+	
+#if TC_DEBUG
 	Logger::info("Creating window \"{}\" ({} x {})", properties.title, properties.width, properties.height);
-
+#endif
+	
 	if(!glfwInitialized) {
 		Logger::logAssert(glfwInit(), "Could not initialize GLFW!");
 		glfwSetErrorCallback([](const int errorCode, const char* log) {

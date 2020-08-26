@@ -55,15 +55,16 @@ static void glErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severi
 			case GL_DEBUG_SEVERITY_HIGH:   Logger::error  ("{}", log); break;
 			case GL_DEBUG_SEVERITY_MEDIUM: Logger::warning("{}", log); break;
 			case GL_DEBUG_SEVERITY_LOW:    Logger::info   ("{}", log); break;
-			default:                       Logger::trace  ("{}", log); break;
+			default:                       Logger::debug  ("{}", log); break;
 		}
 	}
 }
 
 void GraphicsContext::init() {
 
-	Logger::logAssert(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)), "Could not initialize GLAD!");
-
+	const int success = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+	Logger::logAssert(success, "Could not initialize GLAD!");
+	
 #if TC_DEBUG
 
 	glEnable(GL_DEBUG_OUTPUT);
@@ -71,12 +72,13 @@ void GraphicsContext::init() {
 	glDebugMessageCallback(glErrorCallback, nullptr);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
-#endif
-	
 	Logger::info("OpenGL version: {}", glGetString(GL_VERSION));
 	Logger::info("GLSL version: {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	Logger::info("Using {} {}"
 		"\n----------------------------------------------------------------------------------------------------",
 		glGetString(GL_VENDOR), glGetString(GL_RENDERER));
+
+#endif
+	
 }
 
