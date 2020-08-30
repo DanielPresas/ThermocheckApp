@@ -47,10 +47,11 @@ public:
 	}
 	
 	template<typename FormatString, typename ...Args>
-	static void logAssert(const bool checkIfTrue, const FormatString& message, const Args&... args) {
-#if TC_ENABLE_ASSERTS
+	static void logAssert(const bool checkIfTrue, const char* file, const int line, const FormatString& message, const Args&... args) {
 		if(!checkIfTrue) {
 			_logger->critical("ASSERTION FAILED!");
+			_logger->error("FILE: ", file);
+			_logger->error("LINE: ", line);
 			_logger->error(message, args...);
 #	if PLATFORM_WINDOWS
 			__debugbreak();
@@ -58,12 +59,26 @@ public:
 			raise(SIGTRAP);
 #	endif
 		}
-#endif
 	}
 
 private:
 
 	static std::shared_ptr<spdlog::logger> _logger;
 };
+
+
+#define TC_LOG_TRACE(message, ...)       Logger::trace   (message, ##__VA_ARGS__)
+#define TC_LOG_DEBUG(message, ...)       Logger::debug   (message, ##__VA_ARGS__)
+#define TC_LOG_INFO(message, ...)        Logger::info    (message, ##__VA_ARGS__)
+#define TC_LOG_WARNING(message, ...)     Logger::warning (message, ##__VA_ARGS__)
+#define TC_LOG_ERROR(message, ...)       Logger::error   (message, ##__VA_ARGS__)
+#define TC_LOG_CRITICAL(message, ...)    Logger::critical(message, ##__VA_ARGS__)
+
+
+#if TC_ENABLE_ASSERTS
+#	define TC_ASSERT(checkIfTrue, message, ...) Logger::logAssert(checkIfTrue, __FILE__, __LINE__, message, ##__VA_ARGS__)
+#else
+#	define TC_ASSERT(checkIfTrue, message, ...) checkIfTrue
+#endif
 
 #endif

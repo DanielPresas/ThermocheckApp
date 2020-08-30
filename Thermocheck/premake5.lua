@@ -213,6 +213,11 @@ project "Thermocheck"
         optimize "on"
 
     filter { "configurations:Distribution", "system:windows" }
+        linkoptions {
+            "/subsystem:windows",
+            "/entry:mainCRTStartup"
+        }
+
         links {
             "IlmImf",
             "ippicvmt",

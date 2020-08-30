@@ -100,9 +100,9 @@ void ImGuiLayer::end() {
 }
 
 static const char* aboutBody =
-R"LIT(This app is designed to detect temps and tell the user if their temp is flagged as being high.
-Questions/concerns, email ediom at [insert email here]
-)LIT";
+R"(This app is designed to detect temps and tell the user if their temp is flagged as being high.
+Questions/concerns, email Ediom at [insert email here]
+)";
 
 void ImGuiLayer::drawImGui() {
 	static bool aboutWindow = false;

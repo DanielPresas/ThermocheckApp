@@ -18,13 +18,14 @@ Window::Window(const WindowProperties& properties) :
 {
 	
 #if TC_DEBUG
-	Logger::info("Creating window \"{}\" ({} x {})", properties.title, properties.width, properties.height);
+	TC_LOG_INFO("Creating window \"{}\" ({} x {})", properties.title, properties.width, properties.height);
 #endif
 	
 	if(!glfwInitialized) {
-		Logger::logAssert(glfwInit(), "Could not initialize GLFW!");
+		TC_ASSERT(glfwInit(), "Could not initialize GLFW!");
 		glfwSetErrorCallback([](const int errorCode, const char* log) {
-			Logger::critical("GLFW Error! ({})\n{}", errorCode, log);
+			TC_LOG_CRITICAL("GLFW Error! ({})", errorCode);
+			TC_LOG_ERROR("{}", log);
 		});
 		glfwInitialized = true;
 	}

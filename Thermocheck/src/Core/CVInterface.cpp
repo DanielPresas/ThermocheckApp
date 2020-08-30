@@ -19,7 +19,7 @@ void CVInterface::refreshDeviceList() {
 		++idx;
 	}
 
-	Logger::info("Number of connected devices: {}", idx);
+	TC_LOG_INFO("Number of connected devices: {}", idx);
 	_numDevices = idx;
 }
 
@@ -47,17 +47,19 @@ void CVInterface::shutdown() {
 void CVInterface::update() {
 	
 	using namespace cv;
+	UMat frame;
 
 	// Early bail if there is no initialized capture device
+	// Send an empty frame so that the UI shows that there is no capture device.
 	if(!_captureDevice.isInitialized()) {
+		_captureImg->setData(frame);
 		return;
 	}
 	
-	UMat frame;
 	const bool success = _captureDevice.read(frame) && !frame.empty();
 	if(!success) {
-		Logger::error("Failed to read frame from capture device {}!", _captureDevice.index() + 1);
-		Logger::error("Releasing capture device {}...", _captureDevice.index() + 1);
+		TC_LOG_ERROR("Failed to read frame from capture device {}!", _captureDevice.index() + 1);
+		TC_LOG_ERROR("Releasing capture device {}...", _captureDevice.index() + 1);
 		_captureDevice.release();
 	}
 	else {
@@ -86,14 +88,14 @@ void CVInterface::update() {
 
 		UMat gray; cv::cvtColor(frame, gray, COLOR_BGR2GRAY);
 		auto faceCascade = CascadeClassifier("assets/haarcascade_frontalface_default.xml");
-		Logger::logAssert(!faceCascade.empty(), "Failed to load cascade classifier!");
+		TC_ASSERT(!faceCascade.empty(), "Failed to load cascade classifier!");
 
 		std::vector<Rect> faces;
 		{
 			Timer timer("Haar Cascade", true);
 			faceCascade.detectMultiScale(gray, faces, 1.1, 5, 0, { 40, 40 });
 		}
-		Logger::trace("Number of faces detected: {}", faces.size());
+		TC_LOG_TRACE("Number of faces detected: {}", faces.size());
 
 		for(const auto& rect : faces) {
 			cv::rectangle(frame, { rect.x, rect.y }, { rect.x + rect.width, rect.y + rect.height }, { 255 }, 4);
@@ -127,12 +129,20 @@ void CVInterface::drawImGui() {
 					ImGui::SetWindowFontScale(1.0f);
 				}
 				else {
+					constexpr float minWidth = 640;
+					if(_captureImg->getWidth() < minWidth) {
+						const double ratio = minWidth / _captureImg->getWidth();
+						cv::UMat img = _captureImg->getUMat().clone();
+						cv::resize(img, img, { 0, 0 }, ratio, ratio, cv::INTER_NEAREST);
+						_captureImg->setData(img);
+					}
+					
 					if(_captureImg->getWidth() > windowSize.x) {
 						const double ratio = windowSize.x / _captureImg->getWidth();
 						//
 						// OpenGL doesn't like textures that aren't multiples of 4 because of GPU word length,
 						// so we are ensuring that our width and height are always multiples of 4 by taking
-						// advantage of integer division. 
+						// advantage of integer division.
 						//
 						const int width    = static_cast<int>(static_cast<double>(windowSize.x)) / 4 * 4;
 						const int height   = static_cast<int>(static_cast<double>(_captureImg->getHeight()) * ratio) / 4 * 4;
@@ -147,7 +157,7 @@ void CVInterface::drawImGui() {
 						//
 						// OpenGL doesn't like textures that aren't multiples of 4 because of GPU word length,
 						// so we are ensuring that our width and height are always multiples of 4 by taking
-						// advantage of integer division. 
+						// advantage of integer division.
 						//
 						const int width    = static_cast<int>(static_cast<double>(_captureImg->getWidth()) * ratio) / 4 * 4;
 						const int height   = static_cast<int>(static_cast<double>(windowSize.y)) / 4 * 4;

@@ -1,7 +1,6 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "Core/CVInterface.h"
 #include "Core/Window.h"
 
 class Application {

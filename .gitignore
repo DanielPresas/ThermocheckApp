@@ -14,6 +14,8 @@ _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings
 *.DotSettings.user
+*.ib_preset
+
 
 *.vcxproj
 *.vcxproj.filters
