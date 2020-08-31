@@ -56,7 +56,7 @@ void CVInterface::update() {
 		return;
 	}
 	
-	const bool success = _captureDevice.read(frame) && !frame.empty();
+	bool success = _captureDevice.read(frame) && !frame.empty();
 	if(!success) {
 		TC_LOG_ERROR("Failed to read frame from capture device {}!", _captureDevice.index() + 1);
 		TC_LOG_ERROR("Releasing capture device {}...", _captureDevice.index() + 1);
@@ -88,7 +88,8 @@ void CVInterface::update() {
 
 		UMat gray; cv::cvtColor(frame, gray, COLOR_BGR2GRAY);
 		auto faceCascade = CascadeClassifier("assets/haarcascade_frontalface_default.xml");
-		TC_ASSERT(!faceCascade.empty(), "Failed to load cascade classifier!");
+		success = !faceCascade.empty();
+		TC_ASSERT(success, "Failed to load cascade classifier!");
 
 		std::vector<Rect> faces;
 		{

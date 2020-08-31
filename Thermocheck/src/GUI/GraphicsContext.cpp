@@ -48,7 +48,7 @@ static void glErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severi
 	log += "\n" + std::string(message);
 
 	if(type == GL_DEBUG_TYPE_ERROR) {
-		TC_ASSERT(type != GL_DEBUG_TYPE_ERROR, "{}", log);
+		TC_ASSERT(false, "{}", log);
 	}
 	else {
 		switch(severity) {

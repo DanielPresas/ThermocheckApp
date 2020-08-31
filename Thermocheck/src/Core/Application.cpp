@@ -12,7 +12,8 @@ Application::Application() :
 	Application("Thermocheck App", 100, 100) {}
 
 Application::Application(std::string&& title, const uint32_t width, const uint32_t height) {
-	TC_ASSERT(_instance == nullptr, "Application instance already exists!");
+	const bool success = _instance == nullptr;
+	TC_ASSERT(success, "Application instance already exists!");
 	_instance = this;
 
 	_window = new Window({ std::move(title), width, height });
