@@ -67,16 +67,19 @@ void GraphicsContext::init() {
 	
 #if TC_DEBUG
 
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(glErrorCallback, nullptr);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+	GLint flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+	if(flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(glErrorCallback, nullptr);
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
-	TC_LOG_INFO("OpenGL version: {}", glGetString(GL_VERSION));
-	TC_LOG_INFO("GLSL version: {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
-	TC_LOG_INFO("Using {} {}"
-		"\n----------------------------------------------------------------------------------------------------",
-		glGetString(GL_VENDOR), glGetString(GL_RENDERER));
+		TC_LOG_INFO("OpenGL version: {}", glGetString(GL_VERSION));
+		TC_LOG_INFO("GLSL version: {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+		TC_LOG_INFO("Using {} {}"
+			"\n----------------------------------------------------------------------------------------------------",
+			glGetString(GL_VENDOR), glGetString(GL_RENDERER));
+	}
 
 #endif
 	

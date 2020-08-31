@@ -30,10 +30,21 @@ Window::Window(const WindowProperties& properties) :
 		glfwInitialized = true;
 	}
 
+#if PLATFORM_WINDOWS
+	
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	
+#endif
 
+#if TC_DEBUG
+
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+	
+#endif
+
+	
 	_glfwWindow = glfwCreateWindow(static_cast<int>(_properties.width), static_cast<int>(_properties.height), _properties.title.c_str(), nullptr, nullptr);
 	glfwMakeContextCurrent(_glfwWindow);
 	glfwSetWindowUserPointer(_glfwWindow, &_properties);
