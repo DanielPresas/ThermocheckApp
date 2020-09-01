@@ -1,5 +1,7 @@
 #include "tcpch.h"
 
+uint32_t Timer::_id = 0;
+
 Timer::Timer(std::string&& name, const bool start) :
 	_name(std::move(name))
 {

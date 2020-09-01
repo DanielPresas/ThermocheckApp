@@ -7,6 +7,7 @@
 
 CaptureDevice CVInterface::_captureDevice;
 Texture2D* CVInterface::_captureImg = new Texture2D;
+uint32_t CVInterface::_numDevices = 0;
 
 void CVInterface::refreshDeviceList() {
 	int idx = 0;

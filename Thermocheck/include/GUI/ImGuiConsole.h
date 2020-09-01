@@ -24,7 +24,6 @@ private:
 
 class ImGuiConsole {
 
-	using SpdlogLevel = spdlog::level::level_enum;
 	using ConsoleMessageBuffer = std::vector<ConsoleMessage>;
 
 	enum Flags {
@@ -32,6 +31,8 @@ class ImGuiConsole {
 	};
 	
 public:
+
+	using SpdlogLevel = spdlog::level::level_enum;
 
 	static void init();
 	static void shutdown();
@@ -53,11 +54,11 @@ private:
 
 	static ConsoleMessageBuffer _consoleBuffer;
 	
-	static inline SpdlogLevel _consoleLevel = SpdlogLevel::trace;
-	static inline uint32_t    _messageLimit = 100;
-	static inline bool        _autoscroll   = true;
+	static SpdlogLevel _consoleLevel;
+	static uint32_t    _messageLimit;	
+	static uint32_t    _flags;
 	
-	static inline uint32_t _flags;
+	static bool        _autoscroll;
 };
 
 #endif

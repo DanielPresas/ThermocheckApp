@@ -84,12 +84,21 @@ project "Thermocheck"
         }
         
         links {
+            "dl",
+            "GL",
+            "GLU",
+            "X11",
+            "Xi",
+            "Xrandr",
+            "Xxf86vm",
+            
             "IlmImf",
             "ittnotify",
             "libprotobuf",
             "libwebp",
             "jasper",
             "png",
+            "pthread",
             "turbojpeg",
             "tiff",
             "quirc",

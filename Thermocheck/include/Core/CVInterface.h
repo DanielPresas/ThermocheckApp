@@ -40,7 +40,7 @@ private:
 
 	static CaptureDevice _captureDevice;
 	static Texture2D* _captureImg;
-	static inline uint32_t _numDevices = 0;
+	static uint32_t _numDevices;
 	
 };
 

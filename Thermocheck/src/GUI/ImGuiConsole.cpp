@@ -5,17 +5,21 @@
 
 std::vector<ConsoleMessage> ImGuiConsole::_consoleBuffer;
 
-static ImVec4 getMessageColor(const spdlog::level::level_enum level) {
-	using SpdlogLevel = spdlog::level::level_enum;
+ImGuiConsole::SpdlogLevel ImGuiConsole::_consoleLevel = ImGuiConsole::SpdlogLevel::trace;
+uint32_t                  ImGuiConsole::_messageLimit = 100;
+uint32_t                  ImGuiConsole::_flags        = 0;
+bool                      ImGuiConsole::_autoscroll   = true;
+
+static ImVec4 getMessageColor(const ImGuiConsole::SpdlogLevel level) {
 	
 	switch(level) {
-		case SpdlogLevel::trace:       return { 0.75f, 0.75f, 0.75f, 1.0f }; // Light gray
-		case SpdlogLevel::debug:       return { 0.0f,  1.0f,  1.0f,  1.0f }; // Cyan
-		case SpdlogLevel::info:        return { 0.0f,  1.0f,  0.0f,  1.0f }; // Green
-		case SpdlogLevel::warn:        return { 1.0f,  1.0f,  0.0f,  1.0f }; // Yellow
-		case SpdlogLevel::err:         return { 0.7f,  0.2f,  0.3f,  1.0f }; // Dark red
-		case SpdlogLevel::critical:    return { 1.0f,  0.0f,  0.0f,  1.0f }; // Bright red
-		default:                       return { 1.0f,  1.0f,  1.0f,  1.0f }; // White
+		case ImGuiConsole::SpdlogLevel::trace:       return { 0.75f, 0.75f, 0.75f, 1.0f }; // Light gray
+		case ImGuiConsole::SpdlogLevel::debug:       return { 0.0f,  1.0f,  1.0f,  1.0f }; // Cyan
+		case ImGuiConsole::SpdlogLevel::info:        return { 0.0f,  1.0f,  0.0f,  1.0f }; // Green
+		case ImGuiConsole::SpdlogLevel::warn:        return { 1.0f,  1.0f,  0.0f,  1.0f }; // Yellow
+		case ImGuiConsole::SpdlogLevel::err:         return { 0.7f,  0.2f,  0.3f,  1.0f }; // Dark red
+		case ImGuiConsole::SpdlogLevel::critical:    return { 1.0f,  0.0f,  0.0f,  1.0f }; // Bright red
+		default:                                     return { 1.0f,  1.0f,  1.0f,  1.0f }; // White
 	}
 }
 

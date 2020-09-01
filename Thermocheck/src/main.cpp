@@ -10,9 +10,15 @@
 
 #else
 
+#if PLATFORM_WINDOWS
+#	define GPU_VISIBILITY __declspec(dllexport)
+#elif PLATFORM_LINUX
+#	define GPU_VISIBILITY __attribute__((visibility("default")))
+#endif
+
 extern "C" {
-	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x01;
-	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 0x01;
+	GPU_VISIBILITY unsigned long NvOptimusEnablement = 0x01;
+	GPU_VISIBILITY int AmdPowerXpressRequestHighPerformance = 0x01;
 }
 
 int main(int argc, char** argv) {
