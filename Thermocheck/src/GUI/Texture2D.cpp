@@ -5,7 +5,6 @@
 #include <opencv2/opencv.hpp>
 
 Texture2D::~Texture2D() {
-	glBindTexture(GL_TEXTURE_2D, 0);
 	glDeleteTextures(1, &_id);
 }
 
@@ -24,21 +23,24 @@ void Texture2D::setData(cv::InputArray arr) {
 			initTexture2D(arr);
 			return;
 		}
-		
-		glTextureSubImage2D(_id, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, arr.getMat().data);
+
+		glBindTexture(GL_TEXTURE_2D, _id);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, arr.getMat().data);
 	}
 }
 
 void Texture2D::initTexture2D(cv::InputArray arr) {
 	mat = arr.getUMat();
 	
-	glCreateTextures(GL_TEXTURE_2D, 1, &_id);
-	glTextureParameteri(_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTextureParameteri(_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTextureParameteri(_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glGenTextures(1, &_id);
+	glBindTexture(GL_TEXTURE_2D, _id);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 	
-	glTextureStorage2D(_id, 1, GL_RGB8, mat.cols, mat.rows);
-	glTextureSubImage2D(_id, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, arr.getMat().data);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB8, mat.cols, mat.rows);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, arr.getMat().data);
 }
