@@ -10,6 +10,12 @@ Texture2D* CVInterface::_captureImg = new Texture2D;
 uint32_t CVInterface::_numDevices = 0;
 
 void CVInterface::refreshDeviceList() {
+	int cap = -1;
+	if(_captureDevice.isInitialized()) {
+		cap = _captureDevice.index();
+		_captureDevice.release();
+	}
+	
 	int idx = 0;
 	while(true) {
 		if(!_captureDevice.init(idx)) {
@@ -22,6 +28,10 @@ void CVInterface::refreshDeviceList() {
 
 	TC_LOG_INFO("Number of connected devices: {}", idx);
 	_numDevices = idx;
+	
+	if(cap >= 0) {
+		_captureDevice.init(cap);
+	}
 }
 
 bool CaptureDevice::init(const int idx) {
@@ -34,7 +44,6 @@ bool CaptureDevice::init(const int idx) {
 	return true;
 }
 
-#define HSV_SPLIT_DETECT 0
 #define HAAR_CASCADE 1
 
 void CVInterface::init() {
@@ -57,6 +66,7 @@ void CVInterface::update() {
 		return;
 	}
 	
+	TC_LOG_TRACE("Reading from capture device...");
 	bool success = _captureDevice.read(frame) && !frame.empty();
 	if(!success) {
 		TC_LOG_ERROR("Failed to read frame from capture device {}!", _captureDevice.index() + 1);
@@ -65,27 +75,7 @@ void CVInterface::update() {
 	}
 	else {
 
-#if HSV_SPLIT_DETECT
-
-		UMat hsv; cv::cvtColor(frame, hsv, COLOR_BGR2HSV);
-		std::array<Mat, 3> hsvChannels; cv::split(hsv, hsvChannels);
-
-		UMat minSat, maxHue;
-		UMat finalMat;
-		cv::threshold(hsvChannels[0], maxHue, 15, 255, THRESH_BINARY_INV);
-		cv::threshold(hsvChannels[1], minSat, 40, 255, THRESH_BINARY);
-		cv::bitwise_and(minSat, maxHue, finalMat);
-		cv::imshow("HSV Split", finalMat);
-
-		std::vector<Mat> contours; cv::findContours(finalMat, contours, RETR_TREE, CHAIN_APPROX_SIMPLE);
-
-		for(uint32_t i = 0; i < contours.size(); ++i) {
-			if(cv::contourArea(contours.at(i)) < 1000.0) continue;
-			cv::drawContours(frame, contours, i, { 255, 255, 255 }, 2);
-		}
-		cv::imshow("Contour Skin Detect", frame);
-
-#elif HAAR_CASCADE
+#if HAAR_CASCADE
 
 		UMat gray; cv::cvtColor(frame, gray, COLOR_BGR2GRAY);
 		auto faceCascade = CascadeClassifier("assets/haarcascade_frontalface_default.xml");
@@ -94,7 +84,11 @@ void CVInterface::update() {
 
 		std::vector<Rect> faces;
 		{
+#if TC_DEBUG || TC_RELEASE
+
 			Timer timer("Haar Cascade", true);
+
+#endif
 			faceCascade.detectMultiScale(gray, faces, 1.1, 5, 0, { 40, 40 });
 		}
 		TC_LOG_TRACE("Number of faces detected: {}", faces.size());
@@ -192,6 +186,10 @@ void CVInterface::drawImGui() {
 
 			ImGui::PushItemWidth(ImGui::CalcTextSize("Select a device...").x * 1.5f);
 			if(ImGui::BeginCombo("Active Capture Device", name.c_str())) {
+				if(ImGui::Selectable("No device")) {
+					if(_captureDevice.isInitialized()) _captureDevice.release();
+				}
+				
 				for(uint32_t i = 0; i < _numDevices; ++i) {
 					const bool selected = (_captureDevice.index() == static_cast<int>(i));
 					name = "Device " + std::to_string(i + 1);
