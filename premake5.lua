@@ -26,6 +26,7 @@ workspace "ThermocheckApp"
         disablewarnings {
             "unused-function",
             "unused-parameter",
+            "unused-value",
             "unused-variable"
         }
 

@@ -122,6 +122,10 @@ project "Thermocheck"
             "opencv_videostab"
         }
         
+        buildoptions {
+            "-pthread"
+        }
+        
         postbuildcommands {
             "{COPY} \"%{wks.location}/Thermocheck/assets\" \"%{cfg.targetdir}\""
         }

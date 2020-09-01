@@ -41,7 +41,16 @@ void Application::run() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		if(_commandQueue.front() == CV_UPDATE) {
-			_futures.push_back(std::async(std::launch::async, CVInterface::update));
+			if(_futures.size() < std::thread::hardware_concurrency()) {
+				_futures.emplace_back(std::async(std::launch::async, CVInterface::update));
+			}
+			else {
+				for(uint8_t i = 0; i < 4; ++i){
+					_futures.front().get();
+					_futures.erase(_futures.begin());
+				}
+			}
+		
 		}
 		else if(_commandQueue.front() == IMGUI_RENDER) {
 			ImGuiLayer::begin();
