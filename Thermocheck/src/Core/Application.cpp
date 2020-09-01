@@ -31,6 +31,8 @@ Application::~Application() {
 
 void Application::run() {
 
+	const size_t maxThreadCount = std::thread::hardware_concurrency();
+	
 	while(!_commandQueue.empty()) {
 		if(!_isRunning) {
 			_commandQueue.pop();
@@ -41,7 +43,8 @@ void Application::run() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		if(_commandQueue.front() == CV_UPDATE) {
-			if(_futures.size() < std::thread::hardware_concurrency()) {
+
+			if(_futures.size() < maxThreadCount) {
 				_futures.emplace_back(std::async(std::launch::async, CVInterface::update));
 			}
 			else {
@@ -49,6 +52,8 @@ void Application::run() {
 					_futures.front().get();
 					_futures.erase(_futures.begin());
 				}
+				
+				pushCvUpdate(_cvState);
 			}
 		
 		}
