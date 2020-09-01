@@ -25,6 +25,12 @@ private:
 
 };
 
+struct CVState {
+	CaptureDevice* captureDevice = nullptr;
+	cv::UMat       captureMat;
+	uint32_t       numDevices    = 0;
+};
+
 class CVInterface {
 public:
 
@@ -38,10 +44,9 @@ private:
 
 	static void refreshDeviceList();
 
-	static CaptureDevice _captureDevice;
-	static Texture2D* _captureImg;
-	static uint32_t _numDevices;
+	static CVState* _state;
 	
 };
+
 
 #endif

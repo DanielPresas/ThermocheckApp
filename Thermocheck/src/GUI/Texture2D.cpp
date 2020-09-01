@@ -8,7 +8,7 @@ Texture2D::~Texture2D() {
 	glDeleteTextures(1, &_id);
 }
 
-void Texture2D::setData(cv::InputArray arr) {
+void Texture2D::setData(const cv::UMat arr) {
 	_empty = arr.empty();
 
 	if(!_empty) {
@@ -25,12 +25,12 @@ void Texture2D::setData(cv::InputArray arr) {
 		}
 
 		glBindTexture(GL_TEXTURE_2D, _id);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, arr.getMat().data);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, arr.getMat(cv::ACCESS_READ).data);
 	}
 }
 
-void Texture2D::initTexture2D(cv::InputArray arr) {
-	mat = arr.getUMat();
+void Texture2D::initTexture2D(const cv::UMat arr) {
+	mat = arr;
 	
 	glGenTextures(1, &_id);
 	glBindTexture(GL_TEXTURE_2D, _id);
@@ -42,5 +42,5 @@ void Texture2D::initTexture2D(cv::InputArray arr) {
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 	
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB8, mat.cols, mat.rows);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, arr.getMat().data);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mat.cols, mat.rows, GL_BGR, GL_UNSIGNED_BYTE, mat.getMat(cv::ACCESS_READ).data);
 }

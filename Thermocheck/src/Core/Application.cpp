@@ -29,28 +29,52 @@ Application::~Application() {
 	_instance = nullptr;
 }
 
-void Application::run() const {
+void Application::run() {
 
-	while(_isRunning) {
+	while(!_commandQueue.empty()) {
+		if(!_isRunning) {
+			_commandQueue.pop();
+			continue;
+		}
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		
-		if(!_isMinimized) {
 
-			CVInterface::update();
-			
+		if(_commandQueue.front() == CV_UPDATE) {
+			_futures.push_back(std::async(std::launch::async, CVInterface::update));
+		}
+		else if(_commandQueue.front() == IMGUI_RENDER) {
 			ImGuiLayer::begin();
 			{
 				ImGuiLayer::drawImGui();
+				std::lock_guard<Mutex> lock(_mutex);
 				CVInterface::drawImGui();
 			}
 			ImGuiLayer::end();
-			
+
 			_window->update();
-			
 		}
-		
+
+		{
+			std::lock_guard<Mutex> lock(_mutex);
+			_commandQueue.pop();
+		}
 	}
-	
+
+	//
+	// Call get() on the last async future to ensure the
+	// CVInterface::update() thread finishes running before the program ends
+	//
+	_futures.back().get();
+}
+
+void Application::pushCvUpdate(CVState* state) {
+	std::lock_guard<Mutex> lock(_instance->_mutex);
+	_instance->_cvState = state;
+	_instance->_commandQueue.push(CV_UPDATE);
+}
+
+void Application::pushImGuiRender() {
+	std::lock_guard<Mutex> lock(_instance->_mutex);
+	_instance->_commandQueue.push(IMGUI_RENDER);
 }

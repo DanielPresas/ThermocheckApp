@@ -42,6 +42,7 @@ void ImGuiLayer::init() {
 	
 #endif
 
+	Application::pushImGuiRender();
 }
 
 void ImGuiLayer::shutdown() {
@@ -110,6 +111,8 @@ void ImGuiLayer::end() {
 		ImGui::RenderPlatformWindowsDefault();
 		glfwMakeContextCurrent(currentContextBackup);
 	}
+
+	Application::pushImGuiRender();
 }
 
 static const char* aboutBody =

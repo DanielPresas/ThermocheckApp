@@ -10,7 +10,7 @@ public:
 	Texture2D() = default;
 	~Texture2D();
 
-	void setData(cv::InputArray arr);
+	void setData(cv::UMat arr);
 
 	
 	intptr_t getRendererId() const { return static_cast<intptr_t>(_id); }
@@ -24,7 +24,7 @@ public:
 
 private:
 
-	void initTexture2D(cv::InputArray arr);
+	void initTexture2D(cv::UMat arr);
 	
 	cv::UMat mat;
 	bool _empty = true;

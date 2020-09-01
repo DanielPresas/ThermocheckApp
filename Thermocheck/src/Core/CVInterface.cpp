@@ -1,36 +1,38 @@
 #include "tcpch.h"
 #include "Core/CVInterface.h"
 
+
+#include "Core/Application.h"
 #include "Utils/Math.h"
 
 #include <imgui/imgui.h>
 
-CaptureDevice CVInterface::_captureDevice;
-Texture2D* CVInterface::_captureImg = new Texture2D;
-uint32_t CVInterface::_numDevices = 0;
+CVState* CVInterface::_state = new CVState;
+static Texture2D* captureImg = nullptr;
+
 
 void CVInterface::refreshDeviceList() {
 	int cap = -1;
-	if(_captureDevice.isInitialized()) {
-		cap = _captureDevice.index();
-		_captureDevice.release();
+	if(_state->captureDevice->isInitialized()) {
+		cap = _state->captureDevice->index();
+		_state->captureDevice->release();
 	}
 	
 	int idx = 0;
 	while(true) {
-		if(!_captureDevice.init(idx)) {
+		if(!_state->captureDevice->init(idx)) {
 			break;
 		}
 
-		_captureDevice.release();
+		_state->captureDevice->release();
 		++idx;
 	}
 
 	TC_LOG_INFO("Number of connected devices: {}", idx);
-	_numDevices = idx;
+	_state->numDevices = idx;
 	
 	if(cap >= 0) {
-		_captureDevice.init(cap);
+		_state->captureDevice->init(cap);
 	}
 }
 
@@ -47,11 +49,18 @@ bool CaptureDevice::init(const int idx) {
 #define HAAR_CASCADE 1
 
 void CVInterface::init() {
+	captureImg = new Texture2D;
+	_state->captureDevice = new CaptureDevice;
+	
 	refreshDeviceList();
+	Application::pushCvUpdate(_state);
 }
 
 void CVInterface::shutdown() {
-	_captureDevice.release();
+	_state->captureDevice->release();
+	
+	delete _state->captureDevice;
+	delete captureImg;
 }
 
 void CVInterface::update() {
@@ -61,17 +70,18 @@ void CVInterface::update() {
 
 	// Early bail if there is no initialized capture device
 	// Send an empty frame so that the UI shows that there is no capture device.
-	if(!_captureDevice.isInitialized()) {
-		_captureImg->setData(frame);
+	if(!_state->captureDevice->isInitialized()) {
+		_state->captureMat = frame;
+		Application::pushCvUpdate(_state);
 		return;
 	}
-	
+
 	TC_LOG_TRACE("Reading from capture device...");
-	bool success = _captureDevice.read(frame) && !frame.empty();
+	bool success = _state->captureDevice->read(frame) && !frame.empty();
 	if(!success) {
-		TC_LOG_ERROR("Failed to read frame from capture device {}!", _captureDevice.index() + 1);
-		TC_LOG_ERROR("Releasing capture device {}...", _captureDevice.index() + 1);
-		_captureDevice.release();
+		TC_LOG_ERROR("Failed to read frame from capture device {}!", _state->captureDevice->index() + 1);
+		TC_LOG_ERROR("Releasing capture device {}...", _state->captureDevice->index() + 1);
+		_state->captureDevice->release();
 	}
 	else {
 
@@ -101,11 +111,15 @@ void CVInterface::update() {
 
 	}
 
-	_captureImg->setData(frame);
+	_state->captureMat = frame;
+	
+	Application::pushCvUpdate(_state);
 }
 
 void CVInterface::drawImGui() {
-
+	const CVState* state = Application::getCVState();
+	captureImg->setData(state->captureMat);
+	
 	// ---------------------------------------------------
 	// ----- VIDEO CAPTURE WINDOW ------------------------
 	// ---------------------------------------------------
@@ -117,7 +131,7 @@ void CVInterface::drawImGui() {
 			{
 				const Vector2 windowSize = ImGui::GetWindowSize();
 				
-				if(_captureImg->empty()) {
+				if(captureImg->empty()) {
 					ImGui::SetWindowFontScale(3.0f);
 					const Vector2 centre = (windowSize - ImGui::CalcTextSize("No video feed!")) * 0.5f;
 					ImGui::SetCursorPos(centre);
@@ -126,47 +140,47 @@ void CVInterface::drawImGui() {
 				}
 				else {
 					constexpr float minWidth = 640;
-					if(_captureImg->getWidth() < minWidth) {
-						const double ratio = minWidth / _captureImg->getWidth();
-						cv::UMat img = _captureImg->getUMat().clone();
+					if(captureImg->getWidth() < minWidth) {
+						const double ratio = minWidth / captureImg->getWidth();
+						cv::UMat img = captureImg->getUMat().clone();
 						cv::resize(img, img, { 0, 0 }, ratio, ratio, cv::INTER_NEAREST);
-						_captureImg->setData(img);
+						captureImg->setData(img);
 					}
 					
-					if(_captureImg->getWidth() > windowSize.x) {
-						const double ratio = windowSize.x / _captureImg->getWidth();
+					if(captureImg->getWidth() > windowSize.x) {
+						const double ratio = windowSize.x / captureImg->getWidth();
 						//
 						// OpenGL doesn't like textures that aren't multiples of 4 because of GPU word length,
 						// so we are ensuring that our width and height are always multiples of 4 by taking
 						// advantage of integer division.
 						//
 						const int width    = static_cast<int>(static_cast<double>(windowSize.x)) / 4 * 4;
-						const int height   = static_cast<int>(static_cast<double>(_captureImg->getHeight()) * ratio) / 4 * 4;
+						const int height   = static_cast<int>(static_cast<double>(captureImg->getHeight()) * ratio) / 4 * 4;
 
-						cv::UMat img = _captureImg->getUMat().clone();
+						cv::UMat img = captureImg->getUMat().clone();
 						cv::resize(img, img, { width, height });
-						_captureImg->setData(img);
+						captureImg->setData(img);
 					}
-					if(_captureImg->getHeight() > windowSize.y) {
+					if(captureImg->getHeight() > windowSize.y) {
 
-						const double ratio = windowSize.y / _captureImg->getHeight();
+						const double ratio = windowSize.y / captureImg->getHeight();
 						//
 						// OpenGL doesn't like textures that aren't multiples of 4 because of GPU word length,
 						// so we are ensuring that our width and height are always multiples of 4 by taking
 						// advantage of integer division.
 						//
-						const int width    = static_cast<int>(static_cast<double>(_captureImg->getWidth()) * ratio) / 4 * 4;
+						const int width    = static_cast<int>(static_cast<double>(captureImg->getWidth()) * ratio) / 4 * 4;
 						const int height   = static_cast<int>(static_cast<double>(windowSize.y)) / 4 * 4;
 
-						cv::UMat img = _captureImg->getUMat().clone();
+						cv::UMat img = captureImg->getUMat().clone();
 						cv::resize(img, img, { width, height });
-						_captureImg->setData(img);
+						captureImg->setData(img);
 						
 					}
 					
-					const Vector2 centre = (windowSize - _captureImg->getSize()) * 0.5f;
+					const Vector2 centre = (windowSize - captureImg->getSize()) * 0.5f;
 					ImGui::SetCursorPos(centre);
-					ImGui::Image(reinterpret_cast<void*>(_captureImg->getRendererId()), _captureImg->getSize());
+					ImGui::Image(reinterpret_cast<void*>(captureImg->getRendererId()), captureImg->getSize());
 				}
 			}
 			ImGui::End();
@@ -181,22 +195,25 @@ void CVInterface::drawImGui() {
 		ImGui::Begin("Options", nullptr);
 		{
 			std::string name;
-			if(_captureDevice.index() >= 0) name = "Device " + std::to_string(_captureDevice.index() + 1);
+			if(state->captureDevice->index() >= 0) name = "Device " + std::to_string(state->captureDevice->index() + 1);
 			else                            name = "Select a device...";
 
 			ImGui::PushItemWidth(ImGui::CalcTextSize("Select a device...").x * 1.5f);
 			if(ImGui::BeginCombo("Active Capture Device", name.c_str())) {
-				if(ImGui::Selectable("No device")) {
-					if(_captureDevice.isInitialized()) _captureDevice.release();
+				{
+					const bool released = !state->captureDevice->isInitialized();
+					if(ImGui::Selectable("No device", released)) {
+						if(!released) state->captureDevice->release();
+					}
 				}
 				
-				for(uint32_t i = 0; i < _numDevices; ++i) {
-					const bool selected = (_captureDevice.index() == static_cast<int>(i));
+				for(uint32_t i = 0; i < state->numDevices; ++i) {
+					const bool selected = (state->captureDevice->index() == static_cast<int>(i));
 					name = "Device " + std::to_string(i + 1);
 					if(ImGui::Selectable(name.c_str(), selected)) {
 						if(!selected) {
-							_captureDevice.release();
-							_captureDevice.init(i);
+							state->captureDevice->release();
+							state->captureDevice->init(i);
 						}
 					}
 				}
@@ -204,7 +221,7 @@ void CVInterface::drawImGui() {
 			}
 			ImGui::PopItemWidth();
 
-			ImGui::Text("Devices Connected: %u", _numDevices);
+			ImGui::Text("Devices Connected: %u", state->numDevices);
 			ImGui::SameLine();
 			if(ImGui::Button("Refresh Device List")) {
 				refreshDeviceList();
