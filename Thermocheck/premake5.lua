@@ -43,10 +43,6 @@ project "Thermocheck"
         "Externals",
     }
 
-    postbuildcommands {
-        "{COPY} %{wks.location}/Thermocheck/assets %{cfg.targetdir}/assets"
-    }
-
     filter "system:windows"
         cppdialect "C++17"    
         systemversion "latest"
@@ -57,6 +53,10 @@ project "Thermocheck"
         
         libdirs {
             "%{wks.location}/Externals/opencv/install/opencv/x64/vc16/**"
+        }
+        
+        postbuildcommands {
+            "{COPY} \"%{wks.location}Thermocheck/assets\" \"%{cfg.targetdir}/assets\""
         }
 
     filter "system:linux"
@@ -111,6 +111,10 @@ project "Thermocheck"
             "opencv_video",
             "opencv_videoio",
             "opencv_videostab"
+        }
+        
+        postbuildcommands {
+            "{COPY} \"%{wks.location}Thermocheck/assets\" \"%{cfg.targetdir}\""
         }
 
     filter "configurations:Debug"

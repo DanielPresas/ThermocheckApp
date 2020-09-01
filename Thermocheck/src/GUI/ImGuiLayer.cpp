@@ -11,12 +11,15 @@
 #include <imgui/examples/imgui_impl_glfw.h>
 #include <imgui/examples/imgui_impl_opengl3.h>
 
+static const char* imguiIniPath = R"(assets/imgui/imgui.ini)";
+
 void ImGuiLayer::init() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
+	io.IniFilename = imguiIniPath;
 	//io.ConfigViewportsNoTaskBarIcon = true;
 
 	ImGui::StyleColorsDark();
