@@ -24,7 +24,7 @@ public:
 
 private:
 
-	void initTexture2D(cv::UMat arr);
+	void initTexture2D();
 	
 	cv::UMat mat;
 	bool _empty = true;
