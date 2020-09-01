@@ -76,10 +76,12 @@ void Application::run() {
 	}
 
 	//
-	// Call get() on the last async future to ensure the
-	// CVInterface::update() thread finishes running before the program ends
+	// Call get() on any remaining async threads
+	// to make sure they finish executing
 	//
-	_futures.back().get();
+	for(auto& f : _futures) {
+		f.get();
+	}
 }
 
 void Application::pushCvUpdate(CVState* state) {

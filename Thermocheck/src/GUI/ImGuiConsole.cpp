@@ -57,6 +57,7 @@ void ImGuiConsole::drawImGui(bool* show) {
 		// ----- Header -----------------
 		// ------------------------------
 		{
+			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Display Level"); ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::CalcTextSize("Critical").x * 1.5f);
 			if(ImGui::BeginCombo("##Message Level Filter", getLevelName(_consoleLevel)/*, ImGuiComboFlags_NoArrowButton*/))

@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include <imgui/imgui.h>
+#include <opencv2/core/types.hpp>
 
 #include <cstdint>
 
@@ -33,7 +34,8 @@ public:
 	Vector2(const Vector2&) = default;
 	Vector2(const ImVec2& other)    : x(other.x), y(other.y) {}
 	Vector2(const glm::vec2& other) : x(other.x), y(other.y) {}
-	
+
+	operator cv::Point() const { return { static_cast<int>(x), static_cast<int>(y) }; }
 	operator ImVec2()    const { return { x, y }; }
 	operator glm::vec2() const { return { x, y }; }
 

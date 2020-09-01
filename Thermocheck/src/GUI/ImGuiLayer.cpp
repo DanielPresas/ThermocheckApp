@@ -123,7 +123,7 @@ Questions/concerns, email Ediom at [insert email here]
 void ImGuiLayer::drawImGui() {
 	static bool aboutWindow = false;
 	static bool demoWindow = false;
-	static bool consoleWindow = false;
+	static bool consoleWindow = true;
 	static bool metricsWindow = false;
 
 	// ----------------------------------------------------------------
