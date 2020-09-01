@@ -31,7 +31,17 @@ void ImGuiLayer::init() {
 
 	auto* const window = Application::getWindow()->getGlfwWindow();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	
+#if PLATFORM_WINDOWS
+	
 	ImGui_ImplOpenGL3_Init("#version 450");
+	
+#elif PLATFORM_LINUX
+	
+	ImGui_ImplOpenGL3_Init("#version 100");
+	
+#endif
+
 }
 
 void ImGuiLayer::shutdown() {

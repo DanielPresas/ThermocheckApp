@@ -56,7 +56,7 @@ project "Thermocheck"
         }
         
         postbuildcommands {
-            "{COPY} \"%{wks.location}Thermocheck/assets\" \"%{cfg.targetdir}/assets\""
+            "{COPY} \"%{wks.location}/Thermocheck/assets\" \"%{cfg.targetdir}/assets\""
         }
 
     filter "system:linux"
@@ -123,7 +123,7 @@ project "Thermocheck"
         }
         
         postbuildcommands {
-            "{COPY} \"%{wks.location}Thermocheck/assets\" \"%{cfg.targetdir}\""
+            "{COPY} \"%{wks.location}/Thermocheck/assets\" \"%{cfg.targetdir}\""
         }
 
     filter "configurations:Debug"
