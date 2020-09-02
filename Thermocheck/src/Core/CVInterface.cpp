@@ -3,43 +3,15 @@
 
 
 #include "Core/Application.h"
+#include "Core/CaptureDevice.h"
 #include "Utils/Math.h"
 
+#include <libuvc/libuvc.h>
 #include <imgui/imgui.h>
 
 CVState*   CVInterface::_state      = nullptr;
 Texture2D* CVInterface::_captureImg = nullptr;
 bool       CVInterface::_faceDetect = true;
-
-
-// ---------------------------------------------------------------------
-// ----- CAPTURE DEVICE ------------------------------------------------
-// ---------------------------------------------------------------------
-
-
-bool CaptureDevice::init(const int idx) {
-	_device = cv::VideoCapture(idx);
-	if(!_device.isOpened()) {
-		return false;
-	}
-	
-	_index = idx;
-	return true;
-}
-
-void CaptureDevice::release() {
-	_device.release();
-	_index = -1;
-}
-
-bool CaptureDevice::read(cv::OutputArray image) {
-	return _device.isOpened() ? _device.read(image) : false;
-}
-
-// ---------------------------------------------------------------------
-// ----- CV INTERFACE --------------------------------------------------
-// ---------------------------------------------------------------------
-
 
 void CVInterface::init() {
 	_state = new CVState;

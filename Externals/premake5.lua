@@ -15,7 +15,7 @@ project "Externals"
         "glfw3/include",
         "imgui/include/imgui",
         "libusb/libusb",
-        "libuvc/include",
+        "libuvc/include/libuvc",
         "libuvc/build/include",
         "opencv/install/opencv/include",
         "pthread/include",
