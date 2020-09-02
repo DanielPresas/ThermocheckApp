@@ -14,7 +14,11 @@ project "Externals"
         "glad/include",
         "glfw3/include",
         "imgui/include/imgui",
+        "libusb/libusb",
+        "libuvc/include",
+        "libuvc/build/include",
         "opencv/install/opencv/include",
+        "pthread/include",
         "stb/include/stb"
     }
 
@@ -45,6 +49,27 @@ project "Externals"
         "imgui/include/imgui/imgui_demo.cpp",
         "imgui/include/imgui/imgui_draw.cpp",
         "imgui/include/imgui/imgui_widgets.cpp",
+
+        "libusb/libusb/hotplug.h",
+        "libusb/libusb/libusb.h",
+        "libusb/libusb/libusbi.h",
+        "libusb/libusb/version.h",
+        "libusb/libusb/version_nano.h",
+        "libusb/libusb/core.c",
+        "libusb/libusb/descriptor.c",
+        "libusb/libusb/hotplug.c",
+        "libusb/libusb/io.c",
+        "libusb/libusb/strerror.c",
+        "libusb/libusb/sync.c",
+
+        "libuvc/src/ctrl.c",
+        "libuvc/src/ctrl-gen.c",
+        "libuvc/src/device.c",
+        "libuvc/src/diag.c",
+        "libuvc/src/frame.c",
+        "libuvc/src/init.c",
+        "libuvc/src/misc.c",
+        "libuvc/src/stream.c",
         
         "stb/include/stb/stb_image.h",
         "stb/include/stb/stb_image_write.h",
@@ -85,6 +110,16 @@ project "Externals"
     filter "system:windows"
         systemversion "latest"
 
+        disablewarnings {
+            "4005",
+            "4101",
+            "4244",
+        }
+        
+        includedirs {
+            "libusb/msvc"
+        }
+
         files {
             "glfw3/src/win32_init.c",
             "glfw3/src/win32_joystick.c",
@@ -94,13 +129,37 @@ project "Externals"
             "glfw3/src/win32_window.c",
             "glfw3/src/wgl_context.c",
             "glfw3/src/egl_context.c",
-            "glfw3/src/osmesa_context.c"
+            "glfw3/src/osmesa_context.c",
+            
+            "libusb/msvc/config.h",
+            "libusb/libusb/os/poll_windows.h",
+            "libusb/libusb/os/threads_windows.h",
+            "libusb/libusb/os/windows_common.h",
+            "libusb/libusb/os/windows_winusb.h",
+            "libusb/libusb/os/windows_nt_common.h",
+            "libusb/libusb/os/poll_windows.c",
+            "libusb/libusb/os/threads_windows.c",
+            "libusb/libusb/os/windows_nt_common.c",
+            "libusb/libusb/os/windows_winusb.c",
         }
 
         defines {
-            "_GLFW_WIN32",
-            "_CRT_SECURE_NO_WARNINGS",
             "_CRT_NONSTDC_NO_WARNINGS",
+            "_CRT_SECURE_NO_WARNINGS",
+            "_MT",
+            "_GLFW_WIN32",
+            "HAVE_PTW32_CONFIG_H",
+            "WIN32"
+        }
+        
+        libdirs {
+            -- "libusb/x64/Release/dll",
+            "pthread/lib/x64",
+        }
+    
+        links {
+            -- "libusb-1.0"
+            "pthreadVC2"
         }
 
     filter "configurations:Debug"
