@@ -5,13 +5,12 @@
 
 std::vector<ConsoleMessage> ImGuiConsole::_consoleBuffer;
 
-ImGuiConsole::SpdlogLevel ImGuiConsole::_consoleLevel = ImGuiConsole::SpdlogLevel::trace;
+ImGuiConsole::SpdlogLevel ImGuiConsole::_consoleLevel = SpdlogLevel::trace;
 uint32_t                  ImGuiConsole::_messageLimit = 100;
 uint32_t                  ImGuiConsole::_flags        = 0;
 bool                      ImGuiConsole::_autoscroll   = true;
 
 static ImVec4 getMessageColor(const ImGuiConsole::SpdlogLevel level) {
-	
 	switch(level) {
 		case ImGuiConsole::SpdlogLevel::trace:       return { 0.75f, 0.75f, 0.75f, 1.0f }; // Light gray
 		case ImGuiConsole::SpdlogLevel::debug:       return { 0.0f,  1.0f,  1.0f,  1.0f }; // Cyan
@@ -23,17 +22,15 @@ static ImVec4 getMessageColor(const ImGuiConsole::SpdlogLevel level) {
 	}
 }
 
-static const char* getLevelName(const spdlog::level::level_enum level) {
-	using SpdlogLevel = spdlog::level::level_enum;
-	
+static const char* getLevelName(const ImGuiConsole::SpdlogLevel level) {
 	switch(level) {
-		case SpdlogLevel::trace:       return "Trace";
-		case SpdlogLevel::debug:       return "Debug";
-		case SpdlogLevel::info:        return "Info";
-		case SpdlogLevel::warn:        return "Warning";
-		case SpdlogLevel::err:         return "Error";
-		case SpdlogLevel::critical:    return "Critical";
-		default:                       return "Off";
+		case ImGuiConsole::SpdlogLevel::trace:       return "Trace";
+		case ImGuiConsole::SpdlogLevel::debug:       return "Debug";
+		case ImGuiConsole::SpdlogLevel::info:        return "Info";
+		case ImGuiConsole::SpdlogLevel::warn:        return "Warning";
+		case ImGuiConsole::SpdlogLevel::err:         return "Error";
+		case ImGuiConsole::SpdlogLevel::critical:    return "Critical";
+		default:                                     return "Off";
 	}
 }
 

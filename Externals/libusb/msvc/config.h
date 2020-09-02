@@ -31,7 +31,7 @@
 #define ENABLE_LOGGING 1
 
 /* Uncomment to start with debug message logging enabled */
-// #define ENABLE_DEBUG_LOGGING 1
+#define ENABLE_DEBUG_LOGGING 1
 
 /* Uncomment to enabling logging to system log */
 // #define USE_SYSTEM_LOGGING_FACILITY

@@ -1,12 +1,10 @@
 #include "tcpch.h"
 #include "Core/CVInterface.h"
 
-
 #include "Core/Application.h"
 #include "Core/CaptureDevice.h"
 #include "Utils/Math.h"
 
-#include <libuvc/libuvc.h>
 #include <imgui/imgui.h>
 
 CVState*   CVInterface::_state      = nullptr;
@@ -63,8 +61,7 @@ void CVInterface::update() {
 		
 		if(_faceDetect) {
 			auto faceCascade = CascadeClassifier("assets/haarcascade_frontalface_default.xml");
-			success = !faceCascade.empty();
-			TC_ASSERT(success, "Failed to load cascade classifier!");
+			success = TC_ASSERT(!faceCascade.empty(), "Failed to load cascade classifier!");
 			faceCascade.detectMultiScale(gray, faces, 1.1, 5, 0, { 40, 40 });
 
 #if TC_DEBUG || TC_RELEASE

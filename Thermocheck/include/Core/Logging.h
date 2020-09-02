@@ -47,18 +47,22 @@ public:
 	}
 	
 	template<typename FormatString, typename ...Args>
-	static void logAssert(const bool checkIfTrue, const char* file, const int line, const FormatString& message, const Args&... args) {
+	static bool logAssert(const bool checkIfTrue, const char* file, const int line, const FormatString& message, const Args&... args) {
 		if(!checkIfTrue) {
 			_logger->critical("ASSERTION FAILED!");
 			_logger->error("FILE: {}", file);
 			_logger->error("LINE: {}", line);
 			_logger->error(message, args...);
+			
 #	if PLATFORM_WINDOWS
 			__debugbreak();
 #	elif PLATFORM_LINUX
 			raise(SIGTRAP);
 #	endif
+
 		}
+
+		return checkIfTrue;
 	}
 
 private:

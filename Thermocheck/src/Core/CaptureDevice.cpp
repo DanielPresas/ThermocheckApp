@@ -1,21 +1,88 @@
 #include "tcpch.h"
 #include "Core/CaptureDevice.h"
 
-bool CaptureDevice::init(const int idx) {
-	_device = cv::VideoCapture(idx);
-	if(!_device.isOpened()) {
-		return false;
-	}
+#define FLIR_PT2_VID 0x1E4E
+#define FLIR_PT2_PID 0x0100
 
-	_index = idx;
+bool CaptureDevice::init(const int idx) {
+	uvc_error_t success = uvc_init(&_context, nullptr);
+
+	if(success < 0) {
+		const char* error = uvc_strerror(success);
+		return TC_ASSERT(false, "[uvc_init] Failed to initialize UVC context! {}", error);
+	}
+	TC_LOG_DEBUG("UVC context initialized");
+
+	// @Hack: How to get index? Reference pattern?
+	success = uvc_find_device(_context, &_device, FLIR_PT2_VID, FLIR_PT2_PID, nullptr);
+	if(success < 0) {
+		const char* error = uvc_strerror(success);
+		return TC_ASSERT(false, "[uvc_find_device] Failed to find UVC device: {}", error);
+	}
+	TC_LOG_DEBUG("UVC device found");
+
+	success = uvc_open(_device, &_deviceHandle);
+	if(success < 0) {
+		const char* error = uvc_strerror(success);
+		uvc_unref_device(_device);
+		_device = nullptr;
+		return TC_ASSERT(false, "[uvc_open] Failed to open UVC device: {}", error);
+	}
+	TC_LOG_DEBUG("UVC device opened");
+	uvc_print_diag(_deviceHandle, stdout);
+	
+	success = uvc_get_stream_ctrl_format_size(_deviceHandle, &_streamControl, UVC_FRAME_FORMAT_YUYV, 640, 480, 30);
+	uvc_print_stream_ctrl(&_streamControl, stderr);
+	if(success < 0) {
+		const char* error = uvc_strerror(success);
+		return TC_ASSERT(false, "[uvc_get_stream_ctrl_format_size] Failed to get stream control format size: {}", error);
+	}
+	TC_LOG_DEBUG("UVC stream control format size received");
+
 	return true;
 }
 
 void CaptureDevice::release() {
-	_device.release();
-	_index = -1;
+	
 }
 
 bool CaptureDevice::read(cv::OutputArray image) {
-	return _device.isOpened() ? _device.read(image) : false;
+	
+	struct CallbackData {
+		cv::Mat out;
+	} cbData;
+	
+	uvc_error_t success = uvc_start_streaming(_deviceHandle, &_streamControl, [](uvc_frame_t* frame, void* userPtr) {
+		uvc_frame_t* bgr = uvc_allocate_frame(frame->width * frame->height * 3);
+		if(!bgr) {
+			printf("unable to allocate bgr frame!");
+			return;
+		}
+
+		uvc_error_t ret = uvc_any2bgr(frame, bgr);
+		if(ret) {
+			uvc_perror(ret, "uvc_any2bgr");
+			uvc_free_frame(bgr);
+			return;
+		}
+		
+		auto* data = static_cast<CallbackData*>(userPtr);
+		data->out = cv::Mat(bgr->height, bgr->width, CV_8UC3, bgr->data);
+		uvc_free_frame(bgr);
+		
+	}, &cbData, 0);
+
+	if(success < 0) {
+		uvc_perror(success, "uvc_start_streaming");
+		return TC_ASSERT(false, "Failed to start stream!");
+	}
+	uvc_set_ae_mode(_deviceHandle, 1);
+	TC_LOG_DEBUG("UVC stream started");
+	
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	uvc_stop_streaming(_deviceHandle);
+	TC_LOG_DEBUG("UVC stream stopped");
+
+	image.assign(cbData.out);
+	return true;
 }
