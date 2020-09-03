@@ -90,7 +90,7 @@ Before building it is STRONGLY recommended to do perform the following procedure
 - If you don't need them, remove Wolfram and Libre Office from your system. This is especially useful on systems with low capacity SD cards. Removing these two programs will restore ~1 GB of space to your Raspberry Pi.
 
     ```sh
-    $ sudo sudo apt-get purge wolfram-engine
+    $ sudo apt-get purge wolfram-engine
     $ sudo apt-get purge libreoffice*
     $ sudo apt-get clean
     $ sudo apt-get autoremove
@@ -145,7 +145,7 @@ Before building it is STRONGLY recommended to do perform the following procedure
     $ ./install-libuvc.sh
     ```
 
-    Make sure libusb-1.0-0-dev is installed before you run this, or else it won't work.
+    Make sure `libusb-1.0-0-dev` is installed before you run this, or else it won't work.
 
 3. Navigate to the root of the project and run the `Generate_GMake_Files.sh`:
 
