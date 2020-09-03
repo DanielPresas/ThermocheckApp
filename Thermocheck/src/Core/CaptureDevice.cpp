@@ -61,9 +61,6 @@ bool CaptureDevice::init(const int idx) {
 	TC_LOG_DEBUG("UVC device opened");
 	uvc_print_diag(devHandle, stdout);
 
-	TC_LOG_INFO("[uvc_get_device_descriptor] Device vendor: {}", descriptor->idVendor);
-	TC_LOG_INFO("Using {} {} with firmware {}", descriptor->manufacturer, descriptor->product, descriptor->serialNumber);
-
 	const DeviceInfo newDevice = { device, devHandle, descriptor };
 
 	if(_deviceInfo == newDevice) {
@@ -108,7 +105,8 @@ bool CaptureDevice::read(cv::OutputArray image) {
 	struct CallbackData {
 		cv::Mat out;
 	} cbData;
-	
+
+	TC_LOG_INFO("Using {} {} (SN: {})", _deviceInfo.descriptor->manufacturer, _deviceInfo.descriptor->product, _deviceInfo.descriptor->serialNumber);
 	const uvc_error_t success = uvc_start_streaming(_deviceInfo.deviceHandle, &_streamInfo.mode, [](uvc_frame_t* frame, void* userPtr) {
 		uvc_frame_t* bgr = uvc_allocate_frame(frame->width * frame->height * 3);
 		if(!bgr) {
@@ -171,18 +169,18 @@ void CaptureDevice::setVideoFormat() {
 	}
 	
 	TC_LOG_DEBUG("UVC stream mode received:");
-	TC_LOG_DEBUG("    format:\t\t"                   "{}", format);
-	TC_LOG_DEBUG("    bmHint:\t\t"             "0x{:04x}", _streamInfo.mode.bmHint);
+	TC_LOG_DEBUG("    format:\t\t\t"                 "{}", format);
+	TC_LOG_DEBUG("    bmHint:\t\t\t"           "0x{:04x}", _streamInfo.mode.bmHint);
 	TC_LOG_DEBUG("    bFormatIndex:\t\t"             "{}", _streamInfo.mode.bFormatIndex);
-	TC_LOG_DEBUG("    bFrameIndex:\t\t"              "{}", _streamInfo.mode.bFrameIndex);
+	TC_LOG_DEBUG("    bFrameIndex:\t\t\t"            "{}", _streamInfo.mode.bFrameIndex);
 	TC_LOG_DEBUG("    dwFrameInterval:\t\t"          "{}", _streamInfo.mode.dwFrameInterval);
 	TC_LOG_DEBUG("    wKeyFrameRate:\t\t"            "{}", _streamInfo.mode.wKeyFrameRate);
-	TC_LOG_DEBUG("    wPFrameRate:\t\t"              "{}", _streamInfo.mode.wPFrameRate);
+	TC_LOG_DEBUG("    wPFrameRate:\t\t\t"            "{}", _streamInfo.mode.wPFrameRate);
 	TC_LOG_DEBUG("    wCompQuality:\t\t"             "{}", _streamInfo.mode.wCompQuality);
 	TC_LOG_DEBUG("    wCompWindowSize:\t\t"          "{}", _streamInfo.mode.wCompWindowSize);
-	TC_LOG_DEBUG("    wDelay:\t\t"                   "{}", _streamInfo.mode.wDelay);
+	TC_LOG_DEBUG("    wDelay:\t\t\t"                 "{}", _streamInfo.mode.wDelay);
 	TC_LOG_DEBUG("    dwMaxVideoFrameSize:\t\t"      "{}", _streamInfo.mode.dwMaxVideoFrameSize);
-	TC_LOG_DEBUG("    dwMaxPayloadTransferSize:\t\t" "{}", _streamInfo.mode.dwMaxPayloadTransferSize);
+	TC_LOG_DEBUG("    dwMaxPayloadTransferSize:\t"   "{}", _streamInfo.mode.dwMaxPayloadTransferSize);
 	TC_LOG_DEBUG("    bInterfaceNumber:\t\t"         "{}", _streamInfo.mode.bInterfaceNumber);
 }
 
