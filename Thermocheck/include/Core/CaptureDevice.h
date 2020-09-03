@@ -16,27 +16,28 @@ public:
 	bool init(int idx);
 	void release();
 
-	bool isInitialized() const { return _info.isInitialized(); }
-	int index()          const { return _info.isInitialized() ? _info.descriptor->idVendor : -1; }
+	bool isInitialized() const { return _deviceInfo.isInitialized(); }
+	int index()          const { return _deviceInfo.isInitialized() ? _deviceInfo.descriptor->idVendor : -1; }
 
 	bool read(cv::OutputArray image);
 
-	static int listAllDevices();
+	void setVideoFormat();
+
+	static int getAllConnectedDevices();
 
 private:
 
 	static void initContext();
 	
-	struct UVCInfo {
+	struct DeviceInfo {
 		uvc_device_t*            device        = nullptr;
 		uvc_device_handle_t*     deviceHandle  = nullptr;
 		uvc_device_descriptor_t* descriptor    = nullptr;
-		uvc_stream_ctrl_t        streamControl {};        // @Temporary: Do we need this as a class member?
 		
-	  bool operator==(const UVCInfo& other) {
-		  if(descriptor == nullptr) return false;
-		  if(other.descriptor == nullptr) return false;
-		  
+		bool operator==(const DeviceInfo& other) const {
+			if(descriptor == nullptr)       return false;
+			if(other.descriptor == nullptr) return false;
+			
 			const bool sameVendor       = descriptor->idVendor  == other.descriptor->idVendor;
 			const bool sameProduct      = descriptor->idProduct == other.descriptor->idProduct;
 			const bool sameManufacturer = strcmp(descriptor->manufacturer, other.descriptor->manufacturer) == 0;
@@ -51,7 +52,14 @@ private:
 				descriptor   != nullptr;
 		}
 		
-	} _info;
+	} _deviceInfo;
+
+	struct StreamInfo {
+		
+		uvc_stream_ctrl_t mode;
+		uvc_frame_format  format = UVC_FRAME_FORMAT_UNKNOWN;
+		
+	} _streamInfo;
 
 	Vector2 _sensorSize;
 

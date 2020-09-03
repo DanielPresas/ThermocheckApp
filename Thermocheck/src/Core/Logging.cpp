@@ -17,7 +17,7 @@ void Logger::init()
 	_logger = std::make_shared<spdlog::logger>("LOGGER", sinks.begin(), sinks.end());
 	spdlog::register_logger(_logger);
 	
-	spdlog::set_pattern("%^[%H:%M:%S.%e - %l]: %v%$");
+	spdlog::set_pattern("%^[%H:%M:%S][%@][%!] %v%$");
 	_logger->set_level(spdlog::level::trace);
 }
 

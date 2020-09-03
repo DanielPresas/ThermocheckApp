@@ -34,7 +34,7 @@ void CVInterface::update() {
 	using namespace cv;
 	UMat frame;
 
-	// Early bail if there is no initialized capture device
+	// @Note: Early bail if there is no initialized capture device
 	// Send an empty frame so that the UI shows that there is no capture device.
 	if(!Application::getCVState()->captureDevice->isInitialized()) {
 		_state->captureMat = frame;
@@ -134,7 +134,7 @@ void CVInterface::drawImGui() {
 					if(_captureImg->getWidth() > windowSize.x) {
 						const double ratio = windowSize.x / _captureImg->getWidth();
 						//
-						// OpenGL doesn't like textures that aren't multiples of 4 because of GPU word length,
+						// @Note: OpenGL doesn't like textures that aren't multiples of 4 because of GPU word length,
 						// so we are ensuring that our width and height are always multiples of 4 by taking
 						// advantage of integer division.
 						//
@@ -149,7 +149,7 @@ void CVInterface::drawImGui() {
 
 						const double ratio = windowSize.y / _captureImg->getHeight();
 						//
-						// OpenGL doesn't like textures that aren't multiples of 4 because of GPU word length,
+						// @Note: OpenGL doesn't like textures that aren't multiples of 4 because of GPU word length,
 						// so we are ensuring that our width and height are always multiples of 4 by taking
 						// advantage of integer division.
 						//
@@ -233,28 +233,27 @@ void CVInterface::drawImGui() {
 }
 
 void CVInterface::refreshDeviceList() {
-	/*int cap = -1;
-	if(_state->captureDevice->isInitialized()) {
-		cap = _state->captureDevice->index();
-		_state->captureDevice->release();
-	}
+	//int cap = -1;
+	//if(_state->captureDevice->isInitialized()) {
+	//	cap = _state->captureDevice->index();
+	//	_state->captureDevice->release();
+	//}
 
-	int idx = 0;
-	while(true) {
-		if(!_state->captureDevice->init(idx)) {
-			break;
-		}
+	//int idx = 0;
+	//while(true) {
+	//	if(!_state->captureDevice->init(idx)) {
+	//		break;
+	//	}
 
-		_state->captureDevice->release();
-		++idx;
-	}
+	//	_state->captureDevice->release();
+	//	++idx;
+	//}
 
-	_state->numDevices = idx;
+	//_state->numDevices = idx;
 
-	if(cap >= 0) {
-		_state->captureDevice->init(cap);
-	}*/
+	//if(cap >= 0) {
+	//	_state->captureDevice->init(cap);
+	//}
 
-	_state->numDevices = CaptureDevice::listAllDevices();
-	TC_LOG_INFO("Number of connected devices: {}", _state->numDevices);
+	_state->numDevices = CaptureDevice::getAllConnectedDevices();
 }
