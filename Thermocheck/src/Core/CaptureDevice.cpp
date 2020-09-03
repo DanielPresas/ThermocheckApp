@@ -77,6 +77,7 @@ bool CaptureDevice::init(const int idx) {
 
 	const uvc_format_desc_t* formatDesc = uvc_get_format_descs(devHandle);
 	_sensorSize = { formatDesc->frame_descs[0].wWidth, formatDesc->frame_descs[0].wHeight };
+	setVideoFormat();
 	
 	return true;
 }
@@ -162,6 +163,7 @@ void CaptureDevice::setVideoFormat() {
 	if(!hwPseudoColor || radiometry) format = UVC_FRAME_FORMAT_GRAY16;
 	else                             format = UVC_FRAME_FORMAT_RGB;
 
+	_streamInfo.format = format;
 	const uvc_error_t success = uvc_get_stream_ctrl_format_size(_deviceInfo.deviceHandle, &_streamInfo.mode, format, (int)_sensorSize.x, (int)_sensorSize.y, 0);
 	if(success < 0) {
 		const char* error = uvc_strerror(success);
