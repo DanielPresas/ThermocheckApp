@@ -61,6 +61,12 @@ To test in the VS2019 environment, simply click "Local Windows Debugger" at the 
     libatlas-base-dev gfortran
     ```
 
+- USB device access:
+
+    ```sh
+    libusb-1.0-0-dev
+    ```
+
 **NOTE:** Running the script below with `--install-dependencies` will install and/or update these dependencies on your system automatically.
 
 ### *Recommended pre-build setup:*
@@ -132,7 +138,16 @@ Before building it is STRONGLY recommended to do perform the following procedure
 
     You can have a coffee or two while this builds. Maybe even three. Or four. This will take a while.
 
-2. Navigate to the root of the project and run the `Generate_GMake_Files.sh`:
+2. Navigate to the libuvc folder and run `install-libuvc.sh`:
+
+    ```sh
+    $ cd <Thermocheck repo location>/Externals/libuvc
+    $ ./install-libuvc.sh
+    ```
+
+    Make sure libusb-1.0-0-dev is installed before you run this, or else it won't work.
+
+3. Navigate to the root of the project and run the `Generate_GMake_Files.sh`:
 
     ```sh
     $ cd <Thermocheck repo location>
@@ -141,7 +156,7 @@ Before building it is STRONGLY recommended to do perform the following procedure
 
     This will generate all the necessary Makefiles for the project
 
-3. Build the project (using GCC):
+4. Build the project (using GCC):
 
     ```sh
     $ make -j3 -k                        # For debug builds
@@ -151,8 +166,8 @@ Before building it is STRONGLY recommended to do perform the following procedure
 
 ### *Running:*
 
-Navigate to `Thermocheck/Build/bin/ARM` and run the Thermocheck executable.
+Navigate to `Thermocheck/Build/bin/ARM/{config}` and run the Thermocheck executable.
 
 ## **Current build**
 
-Video capture device with Haar Cascade algorithm for face detection.
+ImGui window with options, log, and video feed viewer.

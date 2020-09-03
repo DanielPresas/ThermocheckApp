@@ -77,32 +77,32 @@ void CVInterface::update() {
 			
 		}
 		else {
-			const Vector2 start = { static_cast<float>(frame.cols) * 0.25f, static_cast<float>(frame.rows) * 0.25f };
-			const Vector2 end   = { static_cast<float>(frame.cols) * 0.75f, static_cast<float>(frame.rows) * 0.75f };
+			// const Vector2 start = { static_cast<float>(frame.cols) * 0.25f, static_cast<float>(frame.rows) * 0.25f };
+			// const Vector2 end   = { static_cast<float>(frame.cols) * 0.75f, static_cast<float>(frame.rows) * 0.75f };
 
-			const Rect roi = Rect(start, end);
-			cv::rectangle(frame, start, end, { 255, 255, 255 }, 2);
+			// const Rect roi = Rect(start, end);
+			// cv::rectangle(frame, start, end, { 255, 255, 255 }, 2);
 			
-			Mat subFrame = gray.getMat(cv::ACCESS_FAST)(roi);
-			uint8_t max = 0, min = 255;
-			float avg = 0.0f;
+			// Mat subFrame = gray.getMat(cv::ACCESS_FAST)(roi);
+			// uint8_t max = 0, min = 255;
+			// float avg = 0.0f;
 
-			for(int row = 0; row < subFrame.rows; ++row) {
-				for(int col = 0; col < subFrame.cols; ++col) {
+			// for(int row = 0; row < subFrame.rows; ++row) {
+			// 	for(int col = 0; col < subFrame.cols; ++col) {
 					
-					const uint8_t value = subFrame.at<uchar>(row, col);
-					if(value > max) max = value;
-					if(value < min) min = value;
-					avg += static_cast<float>(value);
+			// 		const uint8_t value = subFrame.at<uchar>(row, col);
+			// 		if(value > max) max = value;
+			// 		if(value < min) min = value;
+			// 		avg += static_cast<float>(value);
 					
-				}
-			}
+			// 	}
+			// }
 
-			avg /= static_cast<float>(subFrame.cols * subFrame.rows);
+			// avg /= static_cast<float>(subFrame.cols * subFrame.rows);
 
-			TC_LOG_INFO("MIN TEMP: {}", min);
-			TC_LOG_INFO("MAX TEMP: {}", max);
-			TC_LOG_INFO("AVG TEMP: {}", avg);
+			// TC_LOG_INFO("MIN TEMP: {}", min);
+			// TC_LOG_INFO("MAX TEMP: {}", max);
+			// TC_LOG_INFO("AVG TEMP: {}", avg);
 		}
 
 	}
