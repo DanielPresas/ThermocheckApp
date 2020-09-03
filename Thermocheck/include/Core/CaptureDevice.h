@@ -33,7 +33,10 @@ private:
 		uvc_device_descriptor_t* descriptor    = nullptr;
 		uvc_stream_ctrl_t        streamControl {};        // @Temporary: Do we need this as a class member?
 		
-		bool operator==(const UVCInfo& other) const {
+	  bool operator==(const UVCInfo& other) {
+		  if(descriptor == nullptr) return false;
+		  if(other.descriptor == nullptr) return false;
+		  
 			const bool sameVendor       = descriptor->idVendor  == other.descriptor->idVendor;
 			const bool sameProduct      = descriptor->idProduct == other.descriptor->idProduct;
 			const bool sameManufacturer = strcmp(descriptor->manufacturer, other.descriptor->manufacturer) == 0;

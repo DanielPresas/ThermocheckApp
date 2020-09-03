@@ -35,7 +35,7 @@ bool CaptureDevice::init(const int idx) {
 		return false;
 	}
 	TC_LOG_DEBUG("UVC device opened");
-	uvc_print_diag(_info.deviceHandle, stdout);
+	uvc_print_diag(devHandle, stdout);
 
 	TC_LOG_INFO("[uvc_get_device_descriptor] Device vendor: {}", descriptor->idVendor);
 	TC_LOG_INFO("Using {} {} with firmware {}", descriptor->manufacturer, descriptor->product, descriptor->serialNumber);
@@ -45,7 +45,7 @@ bool CaptureDevice::init(const int idx) {
 	if(_info == newDevice) {
 		uvc_close(devHandle);
 		uvc_unref_device(device);
-		TC_LOG_DEBUG("Device {} already initialized", _info.descriptor->serialNumber);
+		TC_LOG_DEBUG("Device {} {} already initialized", _info.descriptor->manufacturer, _info.descriptor->product);
 		return false;
 	}
 
@@ -53,8 +53,9 @@ bool CaptureDevice::init(const int idx) {
 
 	const uvc_format_desc_t* formatDesc = uvc_get_format_descs(devHandle);
 	_sensorSize = { formatDesc->frame_descs[0].wWidth, formatDesc->frame_descs[0].wHeight };
-	
-	success = uvc_get_stream_ctrl_format_size(_info.deviceHandle, &_info.streamControl, UVC_FRAME_FORMAT_GRAY16, (int)_sensorSize.x, (int)_sensorSize.y, (int)(double)(1 / formatDesc->frame_descs[0].dwMaxFrameInterval));
+
+	double fps = 1.0 / (double)formatDesc->frame_descs[0].dwMaxFrameInterval;
+	success = uvc_get_stream_ctrl_format_size(_info.deviceHandle, &_info.streamControl, UVC_FRAME_FORMAT_GRAY16, (int)_sensorSize.x, (int)_sensorSize.y, (int)fps);
 	uvc_print_stream_ctrl(&_info.streamControl, stderr);
 	if(success < 0) {
 		uvc_close(devHandle);
@@ -144,8 +145,7 @@ int CaptureDevice::listAllDevices() {
 		TC_LOG_ERROR("[uvc_get_device_list] Failed to get UVC device list: {}", error);
 	}
 
-	TC_LOG_DEBUG("Device\t\t\tFirmware\t\tVID\t\tPID\t\t");
-	TC_LOG_DEBUG("--------------------------------------");
+	TC_LOG_DEBUG("UVC Device list:");
 	uvc_device_t* device;
 	int deviceIdx = -1;
 	while((device = devices[++deviceIdx]) != nullptr) {
@@ -153,7 +153,12 @@ int CaptureDevice::listAllDevices() {
 		uvc_get_device_descriptor(device, &desc);
 		_devices.push_back(desc);
 
-		TC_LOG_DEBUG("{} {}\t\t{}\t\t{}\t\t{})", desc->manufacturer, desc->product, desc->serialNumber, desc->idVendor, desc->idProduct);
+		TC_LOG_DEBUG("---------------------------");
+		TC_LOG_DEBUG("Device {}:", deviceIdx + 1);
+		TC_LOG_DEBUG("    Product:\t{} {}", desc->manufacturer, desc->product);
+		TC_LOG_DEBUG("    Serial:\t{}", desc->serialNumber);
+		TC_LOG_DEBUG("    VID:\t0x{:x}", desc->idVendor);
+		TC_LOG_DEBUG("    PID:\t0x{:x}", desc->idProduct);
 	}
 	
 	TC_LOG_DEBUG("Number of devices connected: {}", deviceIdx);
