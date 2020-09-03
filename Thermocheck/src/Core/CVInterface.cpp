@@ -186,7 +186,6 @@ void CVInterface::drawImGui() {
 			{
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Current Active Capture Device: ");
-				// ImGui::SameLine(ImGui::CalcTextSize("Current Active Capture Device: ").x + 20.0f);
 				
 				ImGui::NextColumn();
 				ImGui::SetNextItemWidth(-1);
@@ -217,7 +216,6 @@ void CVInterface::drawImGui() {
 			{
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Devices Connected: %u", state->numDevices);
-				// ImGui::SameLine(ImGui::CalcTextSize("Devices Connected: %u").x + 20.0f);
 				
 				ImGui::NextColumn();
 				ImGui::SetNextItemWidth(-1);
@@ -235,7 +233,7 @@ void CVInterface::drawImGui() {
 }
 
 void CVInterface::refreshDeviceList() {
-	int cap = -1;
+	/*int cap = -1;
 	if(_state->captureDevice->isInitialized()) {
 		cap = _state->captureDevice->index();
 		_state->captureDevice->release();
@@ -256,5 +254,7 @@ void CVInterface::refreshDeviceList() {
 
 	if(cap >= 0) {
 		_state->captureDevice->init(cap);
-	}
+	}*/
+
+	
 }

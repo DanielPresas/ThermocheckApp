@@ -36,9 +36,7 @@ public:
 
 	template<typename FormatString, typename ...Args>
 	static void debug(const FormatString& message, const Args&... args) {
-#if TC_DEBUG || TC_RELEASE
 		_logger->debug(message, args...);
-#endif
 	}
 	
 	template<typename FormatString, typename ...Args>

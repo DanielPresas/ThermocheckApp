@@ -5,7 +5,7 @@
 
 std::vector<ConsoleMessage> ImGuiConsole::_consoleBuffer;
 
-ImGuiConsole::SpdlogLevel ImGuiConsole::_consoleLevel = SpdlogLevel::trace;
+ImGuiConsole::SpdlogLevel ImGuiConsole::_consoleLevel = SpdlogLevel::info;
 uint32_t                  ImGuiConsole::_messageLimit = 100;
 uint32_t                  ImGuiConsole::_flags        = 0;
 bool                      ImGuiConsole::_autoscroll   = true;
