@@ -100,6 +100,8 @@ void CaptureDevice::release() {
 		_deviceInfo.device = nullptr;
 	}
 
+	_index = -1;
+
 }
 
 bool CaptureDevice::read(cv::OutputArray image) {
