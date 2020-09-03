@@ -148,20 +148,21 @@ bool CaptureDevice::read(cv::OutputArray image) {
 }
 
 void CaptureDevice::setVideoFormat() {
-	uvc_frame_format format;
 
 	const std::string serialNum = _deviceInfo.descriptor->serialNumber;
 	const std::string product   = _deviceInfo.descriptor->product;
 
-	const bool rtAGCChange = !product.find("fw:v0");                                            // @Note: Supports runtime auto gain control
-	const bool y16Firmware = product.find("Y16");                                               // @Temporary: @Note: Has Y16 firmware;
-	const bool radiometric = serialNum.find("500-0763-01") || serialNum.find("500-0771-01");    // @Temporary: @Note: Is radiometric model
+	//const bool rtAGCChange = !product.find("fw:v0");                                            // @Note: Supports runtime auto gain control
+	//const bool y16Firmware = product.find("Y16");                                               // @Temporary: @Note: Has Y16 firmware;
+	//const bool radiometric = serialNum.find("500-0763-01") || serialNum.find("500-0771-01");    // @Temporary: @Note: Is radiometric model
+	//
+	//const bool hwPseudoColor =  rtAGCChange || !y16Firmware;                    // @Note: Supports hardware pseudo-coloring
+	//const bool radiometry    = (rtAGCChange ||  y16Firmware) && radiometric;    // @Note: Supports radiometry
+	//
+	//if(!hwPseudoColor || radiometry) format = UVC_FRAME_FORMAT_GRAY16;
+	//else
 	
-	const bool hwPseudoColor =  rtAGCChange || !y16Firmware;                    // @Note: Supports hardware pseudo-coloring
-	const bool radiometry    = (rtAGCChange ||  y16Firmware) && radiometric;    // @Note: Supports radiometry
-
-	if(!hwPseudoColor || radiometry) format = UVC_FRAME_FORMAT_GRAY16;
-	else                             format = UVC_FRAME_FORMAT_RGB;
+	uvc_frame_format format = UVC_FRAME_FORMAT_RGB;
 
 	_streamInfo.format = format;
 	const uvc_error_t success = uvc_get_stream_ctrl_format_size(_deviceInfo.deviceHandle, &_streamInfo.mode, format, (int)_sensorSize.x, (int)_sensorSize.y, 0);
@@ -171,19 +172,19 @@ void CaptureDevice::setVideoFormat() {
 	}
 	
 	TC_LOG_DEBUG("UVC stream mode received:");
-	TC_LOG_DEBUG("    format:\t\t\t"                     "{}", format);
-	TC_LOG_DEBUG("    bmHint:\t\t\t"               "0x{:04x}", _streamInfo.mode.bmHint);
-	TC_LOG_DEBUG("    bFormatIndex:\t\t"                 "{}", _streamInfo.mode.bFormatIndex);
-	TC_LOG_DEBUG("    bFrameIndex:\t\t\t"                "{}", _streamInfo.mode.bFrameIndex);
-	TC_LOG_DEBUG("    dwFrameInterval:\t\t"              "{}", _streamInfo.mode.dwFrameInterval);
-	TC_LOG_DEBUG("    wKeyFrameRate:\t\t"                "{}", _streamInfo.mode.wKeyFrameRate);
-	TC_LOG_DEBUG("    wPFrameRate:\t\t\t"                "{}", _streamInfo.mode.wPFrameRate);
-	TC_LOG_DEBUG("    wCompQuality:\t\t"                 "{}", _streamInfo.mode.wCompQuality);
-	TC_LOG_DEBUG("    wCompWindowSize:\t\t"              "{}", _streamInfo.mode.wCompWindowSize);
-	TC_LOG_DEBUG("    wDelay:\t\t\t"                     "{}", _streamInfo.mode.wDelay);
-	TC_LOG_DEBUG("    dwMaxVideoFrameSize:\t\t"  "{} ({}x{})", _streamInfo.mode.dwMaxVideoFrameSize, _sensorSize.x, _sensorSize.y);
-	TC_LOG_DEBUG("    dwMaxPayloadTransferSize:\t"       "{}", _streamInfo.mode.dwMaxPayloadTransferSize);
-	TC_LOG_DEBUG("    bInterfaceNumber:\t\t"             "{}", _streamInfo.mode.bInterfaceNumber);
+	TC_LOG_DEBUG("    format:                        {}"        , format);
+	TC_LOG_DEBUG("    bmHint:                        0x{:04x}"  , _streamInfo.mode.bmHint);
+	TC_LOG_DEBUG("    bFormatIndex:                  {}"        , _streamInfo.mode.bFormatIndex);
+	TC_LOG_DEBUG("    bFrameIndex:                   {}"        , _streamInfo.mode.bFrameIndex);
+	TC_LOG_DEBUG("    dwFrameInterval:               {}"        , _streamInfo.mode.dwFrameInterval);
+	TC_LOG_DEBUG("    wKeyFrameRate:                 {}"        , _streamInfo.mode.wKeyFrameRate);
+	TC_LOG_DEBUG("    wPFrameRate:                   {}"        , _streamInfo.mode.wPFrameRate);
+	TC_LOG_DEBUG("    wCompQuality:                  {}"        , _streamInfo.mode.wCompQuality);
+	TC_LOG_DEBUG("    wCompWindowSize:               {}"        , _streamInfo.mode.wCompWindowSize);
+	TC_LOG_DEBUG("    wDelay:                        {}"        , _streamInfo.mode.wDelay);
+	TC_LOG_DEBUG("    dwMaxVideoFrameSize:           {} ({}x{})", _streamInfo.mode.dwMaxVideoFrameSize, (int)_sensorSize.x, (int)_sensorSize.y);
+	TC_LOG_DEBUG("    dwMaxPayloadTransferSize:      {}"        , _streamInfo.mode.dwMaxPayloadTransferSize);
+	TC_LOG_DEBUG("    bInterfaceNumber:              {}"        , _streamInfo.mode.bInterfaceNumber);
 }
 
 int CaptureDevice::getAllConnectedDevices() {
@@ -196,7 +197,7 @@ int CaptureDevice::getAllConnectedDevices() {
 		TC_LOG_ERROR("[uvc_get_device_list] Failed to get UVC device list: {}", error);
 	}
 
-	TC_LOG_DEBUG("UVC Device list:");
+	TC_LOG_DEBUG("UVC device list:");
 	TC_LOG_DEBUG("-------------------------------------");
 	uvc_device_t* device;
 	int deviceIdx = -1;
@@ -206,11 +207,11 @@ int CaptureDevice::getAllConnectedDevices() {
 		_devices.push_back(desc);
 
 		TC_LOG_DEBUG("Device {}:", deviceIdx + 1);
-		TC_LOG_DEBUG("    Product:\t"          "{} {}", desc->manufacturer, desc->product);
-		TC_LOG_DEBUG("    Serial:\t"              "{}", desc->serialNumber);
-		TC_LOG_DEBUG("    VID:\t\t"         "0x{:04x}", desc->idVendor);
-		TC_LOG_DEBUG("    PID:\t\t"         "0x{:04x}", desc->idProduct);
-		TC_LOG_DEBUG("    Compliance:\t"    "0x{:04x}", desc->bcdUVC);
+		TC_LOG_DEBUG("    Product:          {} {}"   , desc->manufacturer, desc->product);
+		TC_LOG_DEBUG("    Serial:           {}"      , desc->serialNumber);
+		TC_LOG_DEBUG("    VID:              0x{:04x}", desc->idVendor);
+		TC_LOG_DEBUG("    PID:              0x{:04x}", desc->idProduct);
+		TC_LOG_DEBUG("    Compliance:       0x{:04x}", desc->bcdUVC);
 	}
 
 	TC_LOG_DEBUG("-------------------------------------");
