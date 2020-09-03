@@ -478,14 +478,14 @@ void get_precise_timestamp_freq(int64_t *perf_freq)
 #endif
 }
 
-inline int64_t get_dev_time_us(uvc_stream_handle_t *strmh, int64_t dev_ticks)
+static inline int64_t get_dev_time_us(uvc_stream_handle_t *strmh, int64_t dev_ticks)
 {
   int64_t time_us = ((int64_t)dev_ticks * MILLION + (strmh->corrected_clock_freq >> 1)) / strmh->corrected_clock_freq;
 
   return time_us;
 }
 
-inline int64_t get_host_time_us(int64_t ts)
+static inline int64_t get_host_time_us(int64_t ts)
 {
 #ifndef __APPLE__
   int64_t freq;

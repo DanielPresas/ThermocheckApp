@@ -14,7 +14,8 @@ bool CaptureDevice::init(const int idx) {
 	TC_LOG_DEBUG("UVC context initialized");
 
 	// @Hack: How to get index? Reference pattern?
-	success = uvc_find_device(_context, &_device, FLIR_PT2_VID, FLIR_PT2_PID, nullptr);
+	// success = uvc_find_device(_context, &_device, FLIR_PT2_VID, FLIR_PT2_PID, nullptr);
+	success = uvc_find_device(_context, &_device, 0, 0, nullptr);
 	if(success < 0) {
 		const char* error = uvc_strerror(success);
 		return TC_ASSERT(false, "[uvc_find_device] Failed to find UVC device: {}", error);
@@ -30,8 +31,18 @@ bool CaptureDevice::init(const int idx) {
 	}
 	TC_LOG_DEBUG("UVC device opened");
 	uvc_print_diag(_deviceHandle, stdout);
+
+	uvc_device_descriptor_t* desc;
+	uvc_get_device_descriptor(_device, &desc);
+	TC_LOG_INFO("[uvc_get_device_descriptor] Device vendor: {}", desc->idVendor);
+
+	TC_LOG_DEBUG("Initializing Lepton SDK with UVC backend...");
+	TC_LOG_DEBUG("Using {} {} with firmware {}", desc->manufacturer, desc->product, desc->serialNumber);
+
+	uvc_free_device_descriptor(desc);
 	
-	success = uvc_get_stream_ctrl_format_size(_deviceHandle, &_streamControl, UVC_FRAME_FORMAT_YUYV, 640, 480, 30);
+	
+	success = uvc_get_stream_ctrl_format_size(_deviceHandle, &_streamControl, UVC_FRAME_FORMAT_GRAY16, 80, 60, 9);
 	uvc_print_stream_ctrl(&_streamControl, stderr);
 	if(success < 0) {
 		const char* error = uvc_strerror(success);
@@ -43,7 +54,12 @@ bool CaptureDevice::init(const int idx) {
 }
 
 void CaptureDevice::release() {
-	
+	TC_LOG_DEBUG("Closing device...");
+    uvc_close(_deviceHandle);
+	TC_LOG_DEBUG("Releasing device...");
+	uvc_unref_device(_device);
+	TC_LOG_DEBUG("Closing context...");
+	uvc_exit(_context);
 }
 
 bool CaptureDevice::read(cv::OutputArray image) {

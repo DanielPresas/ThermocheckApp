@@ -17,12 +17,14 @@ public:
 
 private:
 
-	uvc_context_t* _context = nullptr;
-	uvc_device_t* _device = nullptr;
+	uvc_context_t*       _context      = nullptr;
+	uvc_device_t*        _device       = nullptr;
 	uvc_device_handle_t* _deviceHandle = nullptr;
 	
 	// @Temporary: Do we need this as a class member?
 	uvc_stream_ctrl_t _streamControl{};
+
+	
 };
 
 

@@ -105,6 +105,7 @@ project "Thermocheck"
             "turbojpeg",
             "tiff",
             "quirc",
+			"usb-1.0",
             "z",
 
             "opencv_calib3d",
