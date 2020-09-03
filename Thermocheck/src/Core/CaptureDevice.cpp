@@ -74,8 +74,10 @@ bool CaptureDevice::init(const int idx) {
 
 	const uvc_format_desc_t* formatDesc = uvc_get_format_descs(devHandle);
 	_sensorSize = { formatDesc->frame_descs[0].wWidth, formatDesc->frame_descs[0].wHeight };
-	setVideoFormat();
 	
+	setVideoFormat();
+
+	_index = idx;
 	return true;
 }
 
@@ -169,19 +171,19 @@ void CaptureDevice::setVideoFormat() {
 	}
 	
 	TC_LOG_DEBUG("UVC stream mode received:");
-	TC_LOG_DEBUG("    format:\t\t\t"                 "{}", format);
-	TC_LOG_DEBUG("    bmHint:\t\t\t"           "0x{:04x}", _streamInfo.mode.bmHint);
-	TC_LOG_DEBUG("    bFormatIndex:\t\t"             "{}", _streamInfo.mode.bFormatIndex);
-	TC_LOG_DEBUG("    bFrameIndex:\t\t\t"            "{}", _streamInfo.mode.bFrameIndex);
-	TC_LOG_DEBUG("    dwFrameInterval:\t\t"          "{}", _streamInfo.mode.dwFrameInterval);
-	TC_LOG_DEBUG("    wKeyFrameRate:\t\t"            "{}", _streamInfo.mode.wKeyFrameRate);
-	TC_LOG_DEBUG("    wPFrameRate:\t\t\t"            "{}", _streamInfo.mode.wPFrameRate);
-	TC_LOG_DEBUG("    wCompQuality:\t\t"             "{}", _streamInfo.mode.wCompQuality);
-	TC_LOG_DEBUG("    wCompWindowSize:\t\t"          "{}", _streamInfo.mode.wCompWindowSize);
-	TC_LOG_DEBUG("    wDelay:\t\t\t"                 "{}", _streamInfo.mode.wDelay);
-	TC_LOG_DEBUG("    dwMaxVideoFrameSize:\t\t"      "{}", _streamInfo.mode.dwMaxVideoFrameSize);
-	TC_LOG_DEBUG("    dwMaxPayloadTransferSize:\t"   "{}", _streamInfo.mode.dwMaxPayloadTransferSize);
-	TC_LOG_DEBUG("    bInterfaceNumber:\t\t"         "{}", _streamInfo.mode.bInterfaceNumber);
+	TC_LOG_DEBUG("    format:\t\t\t"                     "{}", format);
+	TC_LOG_DEBUG("    bmHint:\t\t\t"               "0x{:04x}", _streamInfo.mode.bmHint);
+	TC_LOG_DEBUG("    bFormatIndex:\t\t"                 "{}", _streamInfo.mode.bFormatIndex);
+	TC_LOG_DEBUG("    bFrameIndex:\t\t\t"                "{}", _streamInfo.mode.bFrameIndex);
+	TC_LOG_DEBUG("    dwFrameInterval:\t\t"              "{}", _streamInfo.mode.dwFrameInterval);
+	TC_LOG_DEBUG("    wKeyFrameRate:\t\t"                "{}", _streamInfo.mode.wKeyFrameRate);
+	TC_LOG_DEBUG("    wPFrameRate:\t\t\t"                "{}", _streamInfo.mode.wPFrameRate);
+	TC_LOG_DEBUG("    wCompQuality:\t\t"                 "{}", _streamInfo.mode.wCompQuality);
+	TC_LOG_DEBUG("    wCompWindowSize:\t\t"              "{}", _streamInfo.mode.wCompWindowSize);
+	TC_LOG_DEBUG("    wDelay:\t\t\t"                     "{}", _streamInfo.mode.wDelay);
+	TC_LOG_DEBUG("    dwMaxVideoFrameSize:\t\t"  "{} ({}x{})", _streamInfo.mode.dwMaxVideoFrameSize, _sensorSize.x, _sensorSize.y);
+	TC_LOG_DEBUG("    dwMaxPayloadTransferSize:\t"       "{}", _streamInfo.mode.dwMaxPayloadTransferSize);
+	TC_LOG_DEBUG("    bInterfaceNumber:\t\t"             "{}", _streamInfo.mode.bInterfaceNumber);
 }
 
 int CaptureDevice::getAllConnectedDevices() {
@@ -195,6 +197,7 @@ int CaptureDevice::getAllConnectedDevices() {
 	}
 
 	TC_LOG_DEBUG("UVC Device list:");
+	TC_LOG_DEBUG("-------------------------------------");
 	uvc_device_t* device;
 	int deviceIdx = -1;
 	while((device = devices[++deviceIdx]) != nullptr) {
@@ -202,15 +205,15 @@ int CaptureDevice::getAllConnectedDevices() {
 		uvc_get_device_descriptor(device, &desc);
 		_devices.push_back(desc);
 
-		TC_LOG_DEBUG("---------------------------");
 		TC_LOG_DEBUG("Device {}:", deviceIdx + 1);
-		TC_LOG_DEBUG("    Product:\t{} {}",     desc->manufacturer, desc->product);
-		TC_LOG_DEBUG("    Serial:\t{}",         desc->serialNumber);
-		TC_LOG_DEBUG("    VID:\t0x{:x}",        desc->idVendor);
-		TC_LOG_DEBUG("    PID:\t0x{:x}",        desc->idProduct);
-		TC_LOG_DEBUG("    Compliance:\t0x{:x}", desc->bcdUVC);
+		TC_LOG_DEBUG("    Product:\t"          "{} {}", desc->manufacturer, desc->product);
+		TC_LOG_DEBUG("    Serial:\t"              "{}", desc->serialNumber);
+		TC_LOG_DEBUG("    VID:\t\t"         "0x{:04x}", desc->idVendor);
+		TC_LOG_DEBUG("    PID:\t\t"         "0x{:04x}", desc->idProduct);
+		TC_LOG_DEBUG("    Compliance:\t"    "0x{:04x}", desc->bcdUVC);
 	}
-	
+
+	TC_LOG_DEBUG("-------------------------------------");
 	TC_LOG_INFO("Number of devices connected: {}", deviceIdx);
 	return deviceIdx;
 }

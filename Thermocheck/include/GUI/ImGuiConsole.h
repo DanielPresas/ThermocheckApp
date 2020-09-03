@@ -38,16 +38,14 @@ public:
 	static void shutdown();
 	
 	static void sink(ConsoleMessage&& message) {
-		if (message.getLevel() >= _consoleLevel){
-			_consoleBuffer.emplace_back(message);
-			if(_autoscroll) _flags |= AUTOSCROLL;
-		}
+		_consoleBuffer.emplace_back(message);
+		if(_autoscroll) _flags |= AUTOSCROLL;
 	}
 	
 	static void drawImGui(bool* show = nullptr);
 	
 	static void setLevel(const SpdlogLevel level)     { _consoleLevel = level; }
-	static void setMessageLimit(const uint32_t limit) { _messageLimit = limit; _consoleBuffer.reserve(limit + 5); }
+	static void setMessageLimit(const uint32_t limit) { _messageLimit = limit < 0 ? 0 : limit; _consoleBuffer.reserve(limit + 5); }
 	static void enableAutoScroll(const bool scroll)   { _autoscroll   = scroll; }
 
 private:
@@ -55,7 +53,7 @@ private:
 	static ConsoleMessageBuffer _consoleBuffer;
 	
 	static SpdlogLevel _consoleLevel;
-	static uint32_t    _messageLimit;	
+	static int32_t     _messageLimit;
 	static uint32_t    _flags;
 	
 	static bool        _autoscroll;

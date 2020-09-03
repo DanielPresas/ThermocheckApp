@@ -16,18 +16,18 @@ public:
 	bool init(int idx);
 	void release();
 
-	bool isInitialized() const { return _deviceInfo.isInitialized(); }
-	int index()          const { return _deviceInfo.isInitialized() ? _deviceInfo.descriptor->idVendor : -1; }
+	bool isInitialized() const { return _context != nullptr && _deviceInfo.isInitialized(); }
+	int index()          const { return _index; }
 
 	bool read(cv::OutputArray image);
 
-	void setVideoFormat();
 
 	static int getAllConnectedDevices();
 
 private:
 
 	static void initContext();
+	void setVideoFormat();
 	
 	struct DeviceInfo {
 		uvc_device_t*            device        = nullptr;
@@ -61,6 +61,7 @@ private:
 		
 	} _streamInfo;
 
+	uint32_t _index = -1;
 	Vector2 _sensorSize;
 
 	static uvc_context_t* _context;

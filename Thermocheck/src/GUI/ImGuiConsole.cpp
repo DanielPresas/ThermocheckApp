@@ -5,8 +5,8 @@
 
 std::vector<ConsoleMessage> ImGuiConsole::_consoleBuffer;
 
-ImGuiConsole::SpdlogLevel ImGuiConsole::_consoleLevel = SpdlogLevel::info;
-uint32_t                  ImGuiConsole::_messageLimit = 100;
+ImGuiConsole::SpdlogLevel ImGuiConsole::_consoleLevel = SpdlogLevel::debug;
+int32_t                   ImGuiConsole::_messageLimit = 1000;
 uint32_t                  ImGuiConsole::_flags        = 0;
 bool                      ImGuiConsole::_autoscroll   = true;
 
@@ -56,7 +56,7 @@ void ImGuiConsole::drawImGui(bool* show) {
 		{
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Display Level"); ImGui::SameLine();
-			ImGui::PushItemWidth(ImGui::CalcTextSize("Critical").x * 1.5f);
+			ImGui::SetNextItemWidth(ImGui::CalcTextSize("Critical").x * 1.5f);
 			if(ImGui::BeginCombo("##Message Level Filter", getLevelName(_consoleLevel)/*, ImGuiComboFlags_NoArrowButton*/))
 			{
 				for(uint8_t i = 0; i < 7; ++i) {
@@ -69,10 +69,11 @@ void ImGuiConsole::drawImGui(bool* show) {
 				}
 			
 				ImGui::EndCombo();
-			}
-			ImGui::PopItemWidth();
-			ImGui::SameLine();
-			ImGui::Checkbox("Enable Autoscroll", &_autoscroll);
+			} ImGui::SameLine();
+
+			ImGui::Checkbox("Enable Autoscroll", &_autoscroll); ImGui::SameLine();
+			ImGui::InputInt("Message limit", &_messageLimit);
+			
 		}
 		
 		// ------------------------------
