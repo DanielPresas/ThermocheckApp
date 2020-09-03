@@ -70,16 +70,24 @@ bool CaptureDevice::init(const int idx) {
 }
 
 void CaptureDevice::release() {
-	TC_LOG_DEBUG("Freeing descriptor...");
-	uvc_free_device_descriptor(_info.descriptor);
-	TC_LOG_DEBUG("Closing device...");
-	uvc_close(_info.deviceHandle);
-	TC_LOG_DEBUG("Releasing device...");
-	uvc_unref_device(_info.device);
 
-	_info.device       = nullptr;
-	_info.deviceHandle = nullptr;
-	_info.descriptor   = nullptr;
+	TC_LOG_DEBUG("Freeing descriptor...");
+	if(_info.descriptor != nullptr) {
+		uvc_free_device_descriptor(_info.descriptor);
+		_info.descriptor = nullptr;
+	}
+	
+	TC_LOG_DEBUG("Closing device...");
+	if(_info.deviceHandle != nullptr) {
+		uvc_close(_info.deviceHandle);
+		_info.deviceHandle = nullptr;
+	}
+	TC_LOG_DEBUG("Releasing device...");
+	if(_info.device != nullptr) {
+		uvc_unref_device(_info.device);
+		_info.device = nullptr;
+	}
+
 }
 
 bool CaptureDevice::read(cv::OutputArray image) {

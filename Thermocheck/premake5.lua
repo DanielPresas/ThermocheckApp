@@ -7,9 +7,6 @@ project "Thermocheck"
     targetdir "Build/bin/%{cfg.architecture}/%{cfg.buildcfg}"
     objdir "Build/obj/%{cfg.architecture}/%{cfg.buildcfg}"
 
-    pchheader "tcpch.h"
-    pchsource "src/tcpch.cpp"
-
     defines {
         "NOMINMAX",
         "GLFW_INCLUDE_NONE",
@@ -50,6 +47,9 @@ project "Thermocheck"
         cppdialect "C++17"    
         systemversion "latest"
         
+        pchheader "tcpch.h"
+        pchsource "src/tcpch.cpp"
+
         defines {
             "PLATFORM_WINDOWS"
         }
@@ -105,7 +105,7 @@ project "Thermocheck"
             "turbojpeg",
             "tiff",
             "quirc",
-			"usb-1.0",
+            "usb-1.0",
             "z",
 
             "opencv_calib3d",

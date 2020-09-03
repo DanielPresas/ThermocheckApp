@@ -249,12 +249,12 @@ void CVInterface::refreshDeviceList() {
 		++idx;
 	}
 
-	TC_LOG_INFO("Number of connected devices: {}", idx);
 	_state->numDevices = idx;
 
 	if(cap >= 0) {
 		_state->captureDevice->init(cap);
 	}*/
 
-	
+	_state->numDevices = CaptureDevice::listAllDevices();
+	TC_LOG_INFO("Number of connected devices: {}", _state->numDevices);
 }
