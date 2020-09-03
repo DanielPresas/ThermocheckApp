@@ -44,7 +44,7 @@ void ImGuiConsole::shutdown() {
 
 void ImGuiConsole::drawImGui(bool* show) {
 
-	while(_consoleBuffer.size() > _messageLimit) {
+	while(_consoleBuffer.size() > (size_t)_messageLimit) {
 		_consoleBuffer.erase(_consoleBuffer.begin());
 	}
 

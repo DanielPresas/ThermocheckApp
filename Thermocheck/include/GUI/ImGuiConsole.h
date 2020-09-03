@@ -45,7 +45,7 @@ public:
 	static void drawImGui(bool* show = nullptr);
 	
 	static void setLevel(const SpdlogLevel level)     { _consoleLevel = level; }
-	static void setMessageLimit(const uint32_t limit) { _messageLimit = limit < 0 ? 0 : limit; _consoleBuffer.reserve(limit + 5); }
+	static void setMessageLimit(const uint32_t limit) { _messageLimit = (int32_t)limit; _consoleBuffer.reserve(limit + 5); }
 	static void enableAutoScroll(const bool scroll)   { _autoscroll   = scroll; }
 
 private:
