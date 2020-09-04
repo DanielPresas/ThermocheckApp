@@ -10,15 +10,13 @@ project "Externals"
 
     warnings "default"
 
-    includedirs {
+	includedirs {
         "glad/include",
         "glfw3/include",
         "imgui/include/imgui",
-        "libusb/libusb",
         "libuvc/include/libuvc",
         "libuvc/build/include",
         "opencv/install/opencv/include",
-        "pthread/include",
         "stb/include/stb"
     }
 
@@ -49,18 +47,6 @@ project "Externals"
         "imgui/include/imgui/imgui_demo.cpp",
         "imgui/include/imgui/imgui_draw.cpp",
         "imgui/include/imgui/imgui_widgets.cpp",
-
-        "libusb/libusb/hotplug.h",
-        "libusb/libusb/libusb.h",
-        "libusb/libusb/libusbi.h",
-        "libusb/libusb/version.h",
-        "libusb/libusb/version_nano.h",
-        "libusb/libusb/core.c",
-        "libusb/libusb/descriptor.c",
-        "libusb/libusb/hotplug.c",
-        "libusb/libusb/io.c",
-        "libusb/libusb/strerror.c",
-        "libusb/libusb/sync.c",
 
         "libuvc/src/ctrl.c",
         "libuvc/src/ctrl-gen.c",
@@ -106,7 +92,7 @@ project "Externals"
         defines {
             "_GLFW_X11"
         }
-
+		
     filter "system:windows"
         systemversion "latest"
 
@@ -117,7 +103,9 @@ project "Externals"
         }
         
         includedirs {
-            "libusb/msvc"
+		    "libusb/libusb",
+       	    "pthread/include",
+			"libusb/msvc"
         }
 
         files {
@@ -130,7 +118,19 @@ project "Externals"
             "glfw3/src/wgl_context.c",
             "glfw3/src/egl_context.c",
             "glfw3/src/osmesa_context.c",
-            
+			
+			"libusb/libusb/hotplug.h",
+			"libusb/libusb/libusb.h",
+			"libusb/libusb/libusbi.h",
+			"libusb/libusb/version.h",
+			"libusb/libusb/version_nano.h",
+			"libusb/libusb/core.c",
+			"libusb/libusb/descriptor.c",
+			"libusb/libusb/hotplug.c",
+			"libusb/libusb/io.c",
+			"libusb/libusb/strerror.c",
+			"libusb/libusb/sync.c",
+
             "libusb/msvc/config.h",
             "libusb/libusb/os/poll_windows.h",
             "libusb/libusb/os/threads_windows.h",
@@ -176,3 +176,4 @@ project "Externals"
         defines { "NDEBUG" }
         runtime "Release"
         optimize "on"
+
