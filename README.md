@@ -1,6 +1,8 @@
 # Thermocheck App
 
-A simple project that uses OpenCV to get thermal image data and performs facial recognition.
+A simple project that uses OpenCV to stream image data and perform facial recognition.
+
+Please see `FEATURES.md` for all current and future app features.
 
 ## **Building for Windows 10**
 
