@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+DEBUG="debug"
+RELEASE="release"
+DIST="dist"
+DISTRIBUTION="distribution"
+
+if [[ $1 = $DEBUG ]]; then
+   echo -e "Running ThermocheckApp (debug)..."
+   cd Thermocheck/Build/bin/ARM/Debug
+elif [[ $1 = $RELEASE ]]; then
+   echo -e "Running ThermocheckApp (release)..."
+   cd Thermocheck/Build/bin/ARM/Release
+elif [[ $1 = $DIST ]]; then
+   echo -e "Running ThermocheckApp (distribution)..."
+   cd Thermocheck/Build/bin/ARM/Distribution
+elif [[ $1 = $DISTRIBUTION ]]; then
+   echo -e "Running ThermocheckApp (distribution)..."
+   cd Thermocheck/Build/bin/ARM/Distribution
+else
+   cd Thermocheck/Build/bin/ARM/Distribution
+fi
+   
+./Thermocheck
+   
